@@ -1,3 +1,5 @@
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
 import { 
   users, projects, skills, activities, pricingPlans, contactMessages, siteSettings,
   type User, type InsertUser, type Project, type InsertProject, 
@@ -5,6 +7,11 @@ import {
   type PricingPlan, type InsertPricingPlan, type ContactMessage, type InsertContactMessage,
   type SiteSettings, type InsertSiteSettings
 } from "@shared/schema";
+import { eq } from 'drizzle-orm';
+
+// Initialize SQLite database
+const sqlite = new Database(process.env.DATABASE_URL || './database.sqlite');
+const db = drizzle(sqlite);
 
 export interface IStorage {
   // Users
@@ -49,68 +56,56 @@ export interface IStorage {
   updateSiteSettings(settings: Partial<InsertSiteSettings>): Promise<SiteSettings>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User> = new Map();
-  private projects: Map<number, Project> = new Map();
-  private skills: Map<number, Skill> = new Map();
-  private activities: Map<number, Activity> = new Map();
-  private pricingPlans: Map<number, PricingPlan> = new Map();
-  private contactMessages: Map<number, ContactMessage> = new Map();
-  private siteSettings: SiteSettings;
-  private currentId = 1;
-
+export class SQLiteStorage implements IStorage {
   constructor() {
     this.initializeData();
   }
 
-  private initializeData() {
+  private async initializeData() {
+    // Check if data already exists
+    const existingSettings = await db.select().from(siteSettings).limit(1);
+    if (existingSettings.length > 0) return;
+
     // Initialize with sample data
-    this.siteSettings = {
-      id: 1,
+    await db.insert(siteSettings).values({
       heroTitle: "Professional Developer",
       heroSubtitle: "Building modern web applications with cutting-edge technologies",
       aboutDescription: "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences.",
       email: "contact@developer.com",
       phone: "+1 (555) 123-4567",
       location: "Remote / Available Worldwide"
-    };
+    });
 
     // Sample projects
-    this.projects.set(1, {
-      id: 1,
-      title: "E-Commerce Platform",
-      description: "Full-stack e-commerce solution with React, Node.js, and payment integration",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-      liveUrl: "https://ecommerce-demo.vercel.app",
-      githubUrl: "https://github.com/developer/ecommerce",
-      featured: true,
-      createdAt: new Date()
-    });
-
-    this.projects.set(2, {
-      id: 2,
-      title: "Task Management System",
-      description: "Collaborative project management application with real-time synchronization",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400",
-      technologies: ["Vue.js", "Express", "Socket.io", "PostgreSQL"],
-      liveUrl: "https://taskmanager-demo.vercel.app",
-      githubUrl: "https://github.com/developer/taskmanager",
-      featured: false,
-      createdAt: new Date()
-    });
-
-    this.projects.set(3, {
-      id: 3,
-      title: "Social Media Dashboard",
-      description: "Modern social media management platform with analytics and scheduling",
-      image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400",
-      technologies: ["Next.js", "Prisma", "PostgreSQL", "Redis"],
-      liveUrl: "https://social-dashboard.vercel.app",
-      githubUrl: "https://github.com/developer/social-dashboard",
-      featured: true,
-      createdAt: new Date()
-    });
+    await db.insert(projects).values([
+      {
+        title: "E-Commerce Platform",
+        description: "Full-stack e-commerce solution with React, Node.js, and payment integration",
+        image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400",
+        technologies: JSON.stringify(["React", "Node.js", "MongoDB", "Stripe"]),
+        liveUrl: "https://ecommerce-demo.vercel.app",
+        githubUrl: "https://github.com/developer/ecommerce",
+        featured: 1
+      },
+      {
+        title: "Task Management System",
+        description: "Collaborative project management application with real-time synchronization",
+        image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400",
+        technologies: JSON.stringify(["Vue.js", "Express", "Socket.io", "PostgreSQL"]),
+        liveUrl: "https://taskmanager-demo.vercel.app",
+        githubUrl: "https://github.com/developer/taskmanager",
+        featured: 0
+      },
+      {
+        title: "Social Media Dashboard",
+        description: "Modern social media management platform with analytics and scheduling",
+        image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400",
+        technologies: JSON.stringify(["Next.js", "Prisma", "PostgreSQL", "Redis"]),
+        liveUrl: "https://social-dashboard.vercel.app",
+        githubUrl: "https://github.com/developer/social-dashboard",
+        featured: 1
+      }
+    ]);
 
     // Sample skills
     const skillsData = [
@@ -125,9 +120,7 @@ export class MemStorage implements IStorage {
       { name: "MongoDB", category: "Database", level: 78, icon: "fas fa-leaf" }
     ];
 
-    skillsData.forEach((skill, index) => {
-      this.skills.set(index + 1, { id: index + 1, ...skill });
-    });
+    await db.insert(skills).values(skillsData);
 
     // Sample activities
     const activitiesData = [
@@ -157,9 +150,7 @@ export class MemStorage implements IStorage {
       }
     ];
 
-    activitiesData.forEach((activity, index) => {
-      this.activities.set(index + 1, { id: index + 1, ...activity });
-    });
+    await db.insert(activities).values(activitiesData);
 
     // Sample pricing plans
     const pricingData = [
@@ -167,208 +158,164 @@ export class MemStorage implements IStorage {
         name: "Basic Development",
         price: 2500,
         duration: "per project",
-        features: ["Frontend Development", "Responsive Design", "Basic SEO", "1 Month Support"],
-        popular: false
+        features: JSON.stringify(["Frontend Development", "Responsive Design", "Basic SEO", "1 Month Support"]),
+        popular: 0
       },
       {
         name: "Professional Package",
         price: 5500,
         duration: "per project",
-        features: ["Full-Stack Development", "Database Integration", "API Development", "Advanced SEO", "3 Months Support"],
-        popular: true
+        features: JSON.stringify(["Full-Stack Development", "Database Integration", "API Development", "Advanced SEO", "3 Months Support"]),
+        popular: 1
       },
       {
         name: "Enterprise Solution",
         price: 12000,
         duration: "per project",
-        features: ["Enterprise Architecture", "Microservices", "DevOps & CI/CD", "Performance Optimization", "6 Months Support"],
-        popular: false
+        features: JSON.stringify(["Enterprise Architecture", "Microservices", "DevOps & CI/CD", "Performance Optimization", "6 Months Support"]),
+        popular: 0
       }
     ];
 
-    pricingData.forEach((plan, index) => {
-      this.pricingPlans.set(index + 1, { id: index + 1, ...plan });
-    });
+    await db.insert(pricingPlans).values(pricingData);
 
     // Create admin user
-    this.users.set(1, {
-      id: 1,
+    await db.insert(users).values({
       username: "admin",
       password: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy" // hashed "password"
     });
-
-    this.currentId = 100; // Start from 100 for new entries
   }
 
   // Users
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
 
   // Projects
   async getProjects(): Promise<Project[]> {
-    return Array.from(this.projects.values()).sort((a, b) => 
-      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-    );
+    return await db.select().from(projects).orderBy(projects.createdAt);
   }
 
   async getProject(id: number): Promise<Project | undefined> {
-    return this.projects.get(id);
+    const result = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
+    return result[0];
   }
 
-  async createProject(insertProject: InsertProject): Promise<Project> {
-    const id = this.currentId++;
-    const project: Project = { 
-      ...insertProject, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.projects.set(id, project);
-    return project;
+  async createProject(project: InsertProject): Promise<Project> {
+    const result = await db.insert(projects).values(project).returning();
+    return result[0];
   }
 
   async updateProject(id: number, updates: Partial<InsertProject>): Promise<Project> {
-    const existing = this.projects.get(id);
-    if (!existing) throw new Error("Project not found");
-    
-    const updated = { ...existing, ...updates };
-    this.projects.set(id, updated);
-    return updated;
+    const result = await db.update(projects).set(updates).where(eq(projects.id, id)).returning();
+    return result[0];
   }
 
   async deleteProject(id: number): Promise<void> {
-    this.projects.delete(id);
+    await db.delete(projects).where(eq(projects.id, id));
   }
 
   // Skills
   async getSkills(): Promise<Skill[]> {
-    return Array.from(this.skills.values());
+    return await db.select().from(skills).orderBy(skills.name);
   }
 
   async getSkillsByCategory(category: string): Promise<Skill[]> {
-    return Array.from(this.skills.values()).filter(skill => skill.category === category);
+    return await db.select().from(skills).where(eq(skills.category, category)).orderBy(skills.name);
   }
 
-  async createSkill(insertSkill: InsertSkill): Promise<Skill> {
-    const id = this.currentId++;
-    const skill: Skill = { ...insertSkill, id };
-    this.skills.set(id, skill);
-    return skill;
+  async createSkill(skill: InsertSkill): Promise<Skill> {
+    const result = await db.insert(skills).values(skill).returning();
+    return result[0];
   }
 
   async updateSkill(id: number, updates: Partial<InsertSkill>): Promise<Skill> {
-    const existing = this.skills.get(id);
-    if (!existing) throw new Error("Skill not found");
-    
-    const updated = { ...existing, ...updates };
-    this.skills.set(id, updated);
-    return updated;
+    const result = await db.update(skills).set(updates).where(eq(skills.id, id)).returning();
+    return result[0];
   }
 
   async deleteSkill(id: number): Promise<void> {
-    this.skills.delete(id);
+    await db.delete(skills).where(eq(skills.id, id));
   }
 
   // Activities
   async getActivities(): Promise<Activity[]> {
-    return Array.from(this.activities.values());
+    return await db.select().from(activities).orderBy(activities.id);
   }
 
-  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
-    const id = this.currentId++;
-    const activity: Activity = { ...insertActivity, id };
-    this.activities.set(id, activity);
-    return activity;
+  async createActivity(activity: InsertActivity): Promise<Activity> {
+    const result = await db.insert(activities).values(activity).returning();
+    return result[0];
   }
 
   async updateActivity(id: number, updates: Partial<InsertActivity>): Promise<Activity> {
-    const existing = this.activities.get(id);
-    if (!existing) throw new Error("Activity not found");
-    
-    const updated = { ...existing, ...updates };
-    this.activities.set(id, updated);
-    return updated;
+    const result = await db.update(activities).set(updates).where(eq(activities.id, id)).returning();
+    return result[0];
   }
 
   async deleteActivity(id: number): Promise<void> {
-    this.activities.delete(id);
+    await db.delete(activities).where(eq(activities.id, id));
   }
 
   // Pricing Plans
   async getPricingPlans(): Promise<PricingPlan[]> {
-    return Array.from(this.pricingPlans.values());
+    return await db.select().from(pricingPlans).orderBy(pricingPlans.id);
   }
 
-  async createPricingPlan(insertPlan: InsertPricingPlan): Promise<PricingPlan> {
-    const id = this.currentId++;
-    const plan: PricingPlan = { ...insertPlan, id };
-    this.pricingPlans.set(id, plan);
-    return plan;
+  async createPricingPlan(plan: InsertPricingPlan): Promise<PricingPlan> {
+    const result = await db.insert(pricingPlans).values(plan).returning();
+    return result[0];
   }
 
   async updatePricingPlan(id: number, updates: Partial<InsertPricingPlan>): Promise<PricingPlan> {
-    const existing = this.pricingPlans.get(id);
-    if (!existing) throw new Error("Pricing plan not found");
-    
-    const updated = { ...existing, ...updates };
-    this.pricingPlans.set(id, updated);
-    return updated;
+    const result = await db.update(pricingPlans).set(updates).where(eq(pricingPlans.id, id)).returning();
+    return result[0];
   }
 
   async deletePricingPlan(id: number): Promise<void> {
-    this.pricingPlans.delete(id);
+    await db.delete(pricingPlans).where(eq(pricingPlans.id, id));
   }
 
   // Contact Messages
   async getContactMessages(): Promise<ContactMessage[]> {
-    return Array.from(this.contactMessages.values()).sort((a, b) => 
-      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-    );
+    return await db.select().from(contactMessages).orderBy(contactMessages.createdAt);
   }
 
-  async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
-    const id = this.currentId++;
-    const message: ContactMessage = { 
-      ...insertMessage, 
-      id, 
-      read: false, 
-      createdAt: new Date() 
-    };
-    this.contactMessages.set(id, message);
-    return message;
+  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
+    const result = await db.insert(contactMessages).values(message).returning();
+    return result[0];
   }
 
   async markMessageAsRead(id: number): Promise<void> {
-    const message = this.contactMessages.get(id);
-    if (message) {
-      this.contactMessages.set(id, { ...message, read: true });
-    }
+    await db.update(contactMessages).set({ read: 1 }).where(eq(contactMessages.id, id));
   }
 
   async deleteContactMessage(id: number): Promise<void> {
-    this.contactMessages.delete(id);
+    await db.delete(contactMessages).where(eq(contactMessages.id, id));
   }
 
   // Site Settings
   async getSiteSettings(): Promise<SiteSettings> {
-    return this.siteSettings;
+    const result = await db.select().from(siteSettings).limit(1);
+    return result[0];
   }
 
   async updateSiteSettings(updates: Partial<InsertSiteSettings>): Promise<SiteSettings> {
-    this.siteSettings = { ...this.siteSettings, ...updates };
-    return this.siteSettings;
+    const result = await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1)).returning();
+    return result[0];
   }
 }
 
-export const storage = new MemStorage();
+// Export the SQLite storage instance
+export const storage = new SQLiteStorage();
