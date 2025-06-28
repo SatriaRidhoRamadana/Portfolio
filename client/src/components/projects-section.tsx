@@ -69,11 +69,11 @@ export default function ProjectsSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={cardVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">Cosmic Projects</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">Featured Projects</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Stellar applications launched across the digital universe
+            Professional web applications built with modern technologies
           </p>
         </motion.div>
 
@@ -103,7 +103,7 @@ export default function ProjectsSection() {
               </div>
               
               <div className="p-6">
-                <h3 className="orbitron text-xl font-bold mb-2">{project.title}</h3>
+                <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                 <p className="text-slate-400 mb-4 text-sm leading-relaxed">
                   {project.description}
                 </p>

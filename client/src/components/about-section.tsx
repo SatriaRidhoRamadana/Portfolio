@@ -43,20 +43,20 @@ export default function AboutSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={itemVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">About the Mission</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">About Me</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Exploring the frontiers of web development with cutting-edge technologies
+            Professional web developer with expertise in modern technologies
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div className="cosmic-card p-8 rounded-2xl" variants={itemVariants}>
-            <h3 className="orbitron text-2xl font-bold mb-6 text-pink-500">The Journey</h3>
+            <h3 className="text-2xl font-bold mb-6 text-pink-500">Professional Background</h3>
             <p className="text-slate-300 mb-6 leading-relaxed">
               {settings?.aboutDescription || 
-                "As a passionate fullstack developer, I navigate through the vast cosmos of web technologies, creating stellar applications that bridge the gap between imagination and reality. My mission is to craft digital experiences that are not just functional, but truly cosmic."
+                "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences."
               }
             </p>
             <div className="grid grid-cols-2 gap-4">
@@ -97,8 +97,8 @@ export default function AboutSection() {
               >
                 <UserCheck className="text-4xl text-white" size={48} />
               </motion.div>
-              <h4 className="orbitron text-xl font-bold mb-2">Mission Commander</h4>
-              <p className="text-slate-400">Leading expeditions into the digital cosmos</p>
+              <h4 className="text-xl font-bold mb-2">Senior Developer</h4>
+              <p className="text-slate-400">Building exceptional web applications</p>
             </div>
           </motion.div>
         </div>

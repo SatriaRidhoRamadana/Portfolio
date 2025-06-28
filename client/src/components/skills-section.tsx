@@ -79,11 +79,11 @@ export default function SkillsSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={cardVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">Technical Arsenal</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">Technical Skills</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Advanced technologies mastered through cosmic exploration
+            Professional expertise in modern web development technologies
           </p>
         </motion.div>
 

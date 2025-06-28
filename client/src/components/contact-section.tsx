@@ -104,11 +104,11 @@ export default function ContactSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={itemVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">Initiate Contact</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">Contact Information</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Ready to launch your next cosmic project? Send a transmission
+            Ready to start your project? Let's get in touch to discuss your requirements.
           </p>
         </motion.div>
 

@@ -24,9 +24,9 @@ export default function Navigation() {
     { href: "#home", label: "Home" },
     { href: "#about", label: "About" },
     { href: "#skills", label: "Skills" },
-    { href: "#projects", label: "Projects" },
-    { href: "#activities", label: "Activities" },
-    { href: "#pricing", label: "Pricing" },
+    { href: "#projects", label: "Portfolio" },
+    { href: "#activities", label: "Experience" },
+    { href: "#pricing", label: "Services" },
     { href: "#contact", label: "Contact" },
   ];
 
@@ -56,11 +56,11 @@ export default function Navigation() {
           {/* Logo */}
           <Link href="/">
             <motion.div 
-              className="orbitron text-xl font-bold text-pink-500 cursor-pointer"
+              className="text-xl font-bold text-pink-500 cursor-pointer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              &lt;CosmicDev/&gt;
+              Portfolio
             </motion.div>
           </Link>
           

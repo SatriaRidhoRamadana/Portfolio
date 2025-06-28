@@ -69,11 +69,11 @@ export default function ActivitiesSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={cardVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">Mission Activities</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">Professional Experience</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Exploring new frontiers and sharing knowledge across the cosmos
+            Career highlights and professional development journey
           </p>
         </motion.div>
 
@@ -107,7 +107,7 @@ export default function ActivitiesSection() {
                 <i className={`${activity.icon} text-2xl text-white`}></i>
               </motion.div>
               
-              <h3 className="orbitron text-lg font-bold mb-2">{activity.title}</h3>
+              <h3 className="text-lg font-bold mb-2">{activity.title}</h3>
               <p className="text-slate-400 text-sm mb-3 leading-relaxed">
                 {activity.description}
               </p>

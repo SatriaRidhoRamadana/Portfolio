@@ -34,13 +34,13 @@ export default function HeroSection() {
           className="animate-float"
         >
           <motion.h1 
-            className="orbitron text-4xl sm:text-6xl lg:text-7xl font-bold mb-6"
+            className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
           >
             <span className="cosmic-text-gradient">
-              {settings?.heroTitle || "Cosmic Developer"}
+              {settings?.heroTitle || "Professional Developer"}
             </span>
           </motion.h1>
           
@@ -50,7 +50,7 @@ export default function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            {settings?.heroSubtitle || "Crafting digital experiences across the universe of web technologies"}
+            {settings?.heroSubtitle || "Building modern web applications with cutting-edge technologies"}
           </motion.p>
           
           <motion.div 

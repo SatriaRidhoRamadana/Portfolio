@@ -67,47 +67,47 @@ export class MemStorage implements IStorage {
     // Initialize with sample data
     this.siteSettings = {
       id: 1,
-      heroTitle: "Cosmic Developer",
-      heroSubtitle: "Crafting digital experiences across the universe of web technologies",
-      aboutDescription: "As a passionate fullstack developer, I navigate through the vast cosmos of web technologies, creating stellar applications that bridge the gap between imagination and reality. My mission is to craft digital experiences that are not just functional, but truly cosmic.",
-      email: "cosmic@developer.space",
-      phone: "+1 (555) 123-SPACE",
-      location: "Digital Universe"
+      heroTitle: "Professional Developer",
+      heroSubtitle: "Building modern web applications with cutting-edge technologies",
+      aboutDescription: "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences.",
+      email: "contact@developer.com",
+      phone: "+1 (555) 123-4567",
+      location: "Remote / Available Worldwide"
     };
 
     // Sample projects
     this.projects.set(1, {
       id: 1,
-      title: "Cosmic E-Commerce",
-      description: "Full-stack e-commerce platform with React, Node.js, and Stripe integration",
+      title: "E-Commerce Platform",
+      description: "Full-stack e-commerce solution with React, Node.js, and payment integration",
       image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400",
       technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-      liveUrl: "https://cosmic-ecommerce.demo",
-      githubUrl: "https://github.com/cosmic/ecommerce",
+      liveUrl: "https://ecommerce-demo.vercel.app",
+      githubUrl: "https://github.com/developer/ecommerce",
       featured: true,
       createdAt: new Date()
     });
 
     this.projects.set(2, {
       id: 2,
-      title: "Stellar Tasks",
-      description: "Collaborative task management with real-time updates and team features",
+      title: "Task Management System",
+      description: "Collaborative project management application with real-time synchronization",
       image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400",
       technologies: ["Vue.js", "Express", "Socket.io", "PostgreSQL"],
-      liveUrl: "https://stellar-tasks.demo",
-      githubUrl: "https://github.com/cosmic/tasks",
+      liveUrl: "https://taskmanager-demo.vercel.app",
+      githubUrl: "https://github.com/developer/taskmanager",
       featured: false,
       createdAt: new Date()
     });
 
     this.projects.set(3, {
       id: 3,
-      title: "Galaxy Social",
-      description: "Modern social media platform with posts, stories, and messaging",
+      title: "Social Media Dashboard",
+      description: "Modern social media management platform with analytics and scheduling",
       image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400",
       technologies: ["Next.js", "Prisma", "PostgreSQL", "Redis"],
-      liveUrl: "https://galaxy-social.demo",
-      githubUrl: "https://github.com/cosmic/social",
+      liveUrl: "https://social-dashboard.vercel.app",
+      githubUrl: "https://github.com/developer/social-dashboard",
       featured: true,
       createdAt: new Date()
     });
@@ -132,28 +132,28 @@ export class MemStorage implements IStorage {
     // Sample activities
     const activitiesData = [
       {
-        title: "Tech Workshops",
-        description: "Leading coding workshops and mentoring developers in modern web technologies",
-        frequency: "Monthly",
-        icon: "fas fa-chalkboard-teacher"
-      },
-      {
-        title: "Open Source",
-        description: "Contributing to open source projects and maintaining cosmic development tools",
-        frequency: "Ongoing",
+        title: "Senior Full Stack Developer",
+        description: "Leading development teams and architecting scalable web applications for enterprise clients",
+        frequency: "2021 - Present",
         icon: "fas fa-code"
       },
       {
-        title: "Tech Talks",
-        description: "Speaking at conferences about fullstack development and emerging technologies",
-        frequency: "Quarterly",
-        icon: "fas fa-microphone"
+        title: "Technical Lead",
+        description: "Managing cross-functional teams and overseeing technical implementation of complex projects",
+        frequency: "2019 - 2021",
+        icon: "fas fa-users"
       },
       {
-        title: "Tech Blogging",
-        description: "Writing technical articles and tutorials for the developer community",
-        frequency: "Weekly",
-        icon: "fas fa-blog"
+        title: "Open Source Contributor",
+        description: "Contributing to popular open source projects and maintaining community libraries",
+        frequency: "2018 - Present",
+        icon: "fab fa-github"
+      },
+      {
+        title: "Tech Conference Speaker",
+        description: "Speaking at industry conferences about modern web development practices and emerging technologies",
+        frequency: "2020 - Present",
+        icon: "fas fa-microphone"
       }
     ];
 
@@ -164,21 +164,21 @@ export class MemStorage implements IStorage {
     // Sample pricing plans
     const pricingData = [
       {
-        name: "Stellar Starter",
+        name: "Basic Development",
         price: 2500,
         duration: "per project",
         features: ["Frontend Development", "Responsive Design", "Basic SEO", "1 Month Support"],
         popular: false
       },
       {
-        name: "Galactic Pro",
+        name: "Professional Package",
         price: 5500,
         duration: "per project",
         features: ["Full-Stack Development", "Database Integration", "API Development", "Advanced SEO", "3 Months Support"],
         popular: true
       },
       {
-        name: "Cosmic Enterprise",
+        name: "Enterprise Solution",
         price: 12000,
         duration: "per project",
         features: ["Enterprise Architecture", "Microservices", "DevOps & CI/CD", "Performance Optimization", "6 Months Support"],

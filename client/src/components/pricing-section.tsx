@@ -74,11 +74,11 @@ export default function PricingSection() {
         viewport={{ once: true }}
       >
         <motion.div className="text-center mb-16" variants={cardVariants}>
-          <h2 className="orbitron text-3xl sm:text-4xl font-bold mb-4">
-            <span className="cosmic-text-gradient">Mission Pricing</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <span className="cosmic-text-gradient">Service Packages</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Choose your cosmic development package for interstellar success
+            Professional development services tailored to your project needs
           </p>
         </motion.div>
 
@@ -110,7 +110,7 @@ export default function PricingSection() {
               )}
               
               <div className="text-center mb-6">
-                <h3 className="orbitron text-xl font-bold mb-2">{plan.name}</h3>
+                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                 <motion.div
                   className="text-3xl font-bold text-pink-500 mb-2"
                   whileHover={{ scale: 1.1 }}
