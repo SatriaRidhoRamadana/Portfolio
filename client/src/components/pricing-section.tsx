@@ -7,6 +7,7 @@ import type { PricingPlan } from "@shared/schema";
 export default function PricingSection() {
   const { data: pricingPlans, isLoading } = useQuery<PricingPlan[]>({
     queryKey: ["/api/pricing"],
+    queryFn: () => fetch("/api/pricing").then(res => res.json()),
   });
 
   const containerVariants = {
@@ -90,13 +91,13 @@ export default function PricingSection() {
             <motion.div
               key={plan.id}
               className={`cosmic-card p-8 rounded-2xl relative ${
-                plan.popular ? "border-2 border-pink-500" : ""
+                plan.popular === 1 ? "border-2 border-pink-500" : ""
               }`}
               variants={cardVariants}
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              {plan.popular && (
+              {plan.popular === 1 && (
                 <motion.div
                   className="absolute -top-4 left-1/2 transform -translate-x-1/2"
                   initial={{ opacity: 0, y: -10 }}
@@ -122,7 +123,11 @@ export default function PricingSection() {
               </div>
               
               <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, index) => (
+                {(
+                  Array.isArray(plan.features)
+                    ? plan.features
+                    : JSON.parse(plan.features)
+                ).map((feature, index) => (
                   <motion.li
                     key={index}
                     className="flex items-center text-sm"
@@ -138,7 +143,7 @@ export default function PricingSection() {
               
               <Button
                 className={`w-full py-3 font-medium transition-all ${
-                  plan.popular
+                  plan.popular === 1
                     ? "cosmic-btn"
                     : "glassmorphism border border-pink-500/30 hover:border-pink-500/50"
                 }`}

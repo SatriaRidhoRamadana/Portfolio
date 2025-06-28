@@ -23,10 +23,28 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
+  optimizeDeps: {
+    include: [
+      "lucide-react",
+      "framer-motion",
+      "react",
+      "react-dom"
+    ],
+    exclude: []
+  },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['lucide-react', 'framer-motion']
+        }
+      }
+    }
   },
   server: {
     fs: {

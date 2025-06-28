@@ -3,18 +3,17 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mail, Phone, MapPin, Linkedin, Github, Twitter, Youtube, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Github, MessageCircle, Youtube, Send, Instagram, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { insertContactMessageSchema } from "@shared/schema";
-import type { SiteSettings } from "@shared/schema";
+import type { SiteSettings, SocialLink } from "@shared/schema";
 import { z } from "zod";
 
-const contactFormSchema = insertContactMessageSchema.extend({
+const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
@@ -29,6 +28,12 @@ export default function ContactSection() {
   
   const { data: settings } = useQuery<SiteSettings>({
     queryKey: ["/api/settings"],
+    queryFn: () => fetch("/api/settings").then(res => res.json()),
+  });
+
+  const { data: socialLinks } = useQuery<SocialLink[]>({
+    queryKey: ["/api/social-links"],
+    queryFn: () => fetch("/api/social-links").then(res => res.json()),
   });
 
   const form = useForm<ContactFormData>({
@@ -43,7 +48,28 @@ export default function ContactSection() {
 
   const contactMutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
-      return apiRequest("POST", "/api/contact", data);
+      // Ensure all fields are strings and not undefined
+      const cleanData = {
+        name: String(data.name || '').trim(),
+        email: String(data.email || '').trim(),
+        subject: String(data.subject || '').trim(),
+        message: String(data.message || '').trim(),
+      };
+      
+      // Validate that all required fields are present
+      if (!cleanData.name || !cleanData.email || !cleanData.subject || !cleanData.message) {
+        throw new Error('All fields are required');
+      }
+      
+      console.log('Sending contact data:', cleanData);
+      try {
+        const response = await apiRequest("POST", "/api/contact", cleanData);
+        console.log('Contact response:', response);
+        return response;
+      } catch (error) {
+        console.error('Contact API error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({
@@ -54,9 +80,10 @@ export default function ContactSection() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/messages"] });
     },
     onError: (error) => {
+      console.error('Contact mutation error:', error);
       toast({
         title: "Transmission Failed",
-        description: "Failed to send message. Please try again.",
+        description: error?.message || "Failed to send message. Please try again.",
         variant: "destructive",
       });
     },
@@ -87,12 +114,14 @@ export default function ContactSection() {
     },
   };
 
-  const socialLinks = [
-    { icon: Linkedin, href: "#", color: "bg-blue-600" },
-    { icon: Github, href: "#", color: "bg-gray-800" },
-    { icon: Twitter, href: "#", color: "bg-blue-400" },
-    { icon: Youtube, href: "#", color: "bg-red-600" },
-  ];
+  const SOCIAL_ICON_MAP: Record<string, JSX.Element> = {
+    Instagram: <Instagram className="text-pink-500" />,
+    LinkedIn: <Linkedin className="text-blue-600" />,
+    GitHub: <Github className="text-gray-800" />,
+    Telegram: <Send className="text-blue-400" />,
+    YouTube: <Youtube className="text-red-600" />,
+    Facebook: <Facebook className="text-blue-700" />,
+  };
 
   return (
     <section id="contact" className="py-20 relative">
@@ -166,25 +195,34 @@ export default function ContactSection() {
             <motion.div className="cosmic-card p-6 rounded-xl" variants={itemVariants}>
               <h3 className="orbitron text-xl font-bold mb-6">Social Channels</h3>
               <div className="flex gap-4">
-                {socialLinks.map((social, index) => (
-                  <motion.a
-                    key={index}
-                    href={social.href}
-                    className={`w-12 h-12 ${social.color} rounded-lg flex items-center justify-center`}
-                    whileHover={{ 
-                      scale: 1.1, 
-                      rotate: 360 
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ 
-                      type: "spring", 
-                      stiffness: 400,
-                      rotate: { duration: 0.6 }
-                    }}
-                  >
-                    <social.icon className="text-white" size={20} />
-                  </motion.a>
-                ))}
+                {socialLinks && socialLinks.length > 0 ? (
+                  socialLinks.map((social, index) => {
+                    const IconComponent = SOCIAL_ICON_MAP[social.name] || <Send />;
+                    return (
+                      <motion.a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center`}
+                        whileHover={{ 
+                          scale: 1.1, 
+                          rotate: 360 
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ 
+                          type: "spring", 
+                          stiffness: 400,
+                          rotate: { duration: 0.6 }
+                        }}
+                      >
+                        {IconComponent}
+                      </motion.a>
+                    );
+                  })
+                ) : (
+                  <div className="text-slate-400 text-sm">No social links configured</div>
+                )}
               </div>
             </motion.div>
           </motion.div>

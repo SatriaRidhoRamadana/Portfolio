@@ -5,6 +5,7 @@ import type { Activity } from "@shared/schema";
 export default function ActivitiesSection() {
   const { data: activities, isLoading } = useQuery<Activity[]>({
     queryKey: ["/api/activities"],
+    queryFn: () => fetch("/api/activities").then(res => res.json()),
   });
 
   const containerVariants = {

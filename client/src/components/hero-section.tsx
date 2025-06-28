@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Rocket, Mail } from "lucide-react";
+import { Rocket, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import type { SiteSettings } from "@shared/schema";
@@ -7,6 +7,7 @@ import type { SiteSettings } from "@shared/schema";
 export default function HeroSection() {
   const { data: settings } = useQuery<SiteSettings>({
     queryKey: ["/api/settings"],
+    queryFn: () => fetch("/api/settings").then(res => res.json()),
   });
 
   const handleExploreProjects = () => {
@@ -33,6 +34,29 @@ export default function HeroSection() {
           transition={{ duration: 0.8 }}
           className="animate-float"
         >
+          {/* Profile Photo */}
+          <motion.div
+            className="mb-8 flex justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.1 }}
+          >
+            <div className="relative">
+              {settings?.profilePhoto ? (
+                <img
+                  src={settings.profilePhoto}
+                  alt="Profile"
+                  className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-pink-500/30 shadow-2xl shadow-pink-500/20 object-cover"
+                />
+              ) : (
+                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-pink-500/30 shadow-2xl shadow-pink-500/20 bg-slate-700 flex items-center justify-center">
+                  <User className="w-16 h-16 sm:w-20 sm:h-20 text-slate-400" />
+                </div>
+              )}
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-slate-900 animate-pulse"></div>
+            </div>
+          </motion.div>
+
           <motion.h1 
             className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6"
             initial={{ opacity: 0, scale: 0.8 }}

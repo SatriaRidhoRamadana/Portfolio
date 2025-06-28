@@ -14,7 +14,7 @@ export interface AuthResponse {
 }
 
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
-  const response = await apiRequest("POST", "/api/auth/login", credentials);
+  const response = await apiRequest("POST", "/api/login", credentials);
   return response.json();
 }
 

@@ -19,13 +19,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  // Validate token and auto-logout if invalid
+  const validateToken = async (token: string) => {
+    try {
+      const response = await fetch("/api/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error("Token invalid");
+      }
+      
+      return true;
+    } catch (error) {
+      console.log("Token validation failed:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const storedToken = localStorage.getItem("cosmic-auth-token");
     const storedUser = localStorage.getItem("cosmic-auth-user");
     
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      // Validate token before setting state
+      validateToken(storedToken).then((isValid) => {
+        if (isValid) {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        } else {
+          // Auto-logout if token is invalid
+          localStorage.removeItem("cosmic-auth-token");
+          localStorage.removeItem("cosmic-auth-user");
+        }
+      });
     }
   }, []);
 

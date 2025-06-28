@@ -1,11 +1,12 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { 
-  users, projects, skills, activities, pricingPlans, contactMessages, siteSettings,
+  users, projects, skills, activities, pricingPlans, contactMessages, siteSettings, socialLinks,
   type User, type InsertUser, type Project, type InsertProject, 
   type Skill, type InsertSkill, type Activity, type InsertActivity,
   type PricingPlan, type InsertPricingPlan, type ContactMessage, type InsertContactMessage,
-  type SiteSettings, type InsertSiteSettings
+  type SiteSettings, type InsertSiteSettings, type SocialLink, type InsertSocialLink,
+  type Article, type InsertArticle, articles, education, type Education, type InsertEducation
 } from "@shared/schema";
 import { eq } from 'drizzle-orm';
 
@@ -54,6 +55,25 @@ export interface IStorage {
   // Site Settings
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(settings: Partial<InsertSiteSettings>): Promise<SiteSettings>;
+
+  // Social Links
+  getSocialLinks(): Promise<SocialLink[]>;
+  createSocialLink(link: InsertSocialLink): Promise<SocialLink>;
+  updateSocialLink(id: number, updates: Partial<InsertSocialLink>): Promise<SocialLink>;
+  deleteSocialLink(id: number): Promise<void>;
+
+  // Articles
+  getArticles(): Promise<Article[]>;
+  getArticle(id: number): Promise<Article | undefined>;
+  createArticle(article: InsertArticle): Promise<Article>;
+  updateArticle(id: number, updates: Partial<InsertArticle>): Promise<Article>;
+  deleteArticle(id: number): Promise<void>;
+
+  // Education
+  getEducation(): Promise<Education[]>;
+  createEducation(data: InsertEducation): Promise<Education>;
+  updateEducation(id: number, updates: Partial<InsertEducation>): Promise<Education>;
+  deleteEducation(id: number): Promise<void>;
 }
 
 export class SQLiteStorage implements IStorage {
@@ -85,7 +105,8 @@ export class SQLiteStorage implements IStorage {
         technologies: JSON.stringify(["React", "Node.js", "MongoDB", "Stripe"]),
         liveUrl: "https://ecommerce-demo.vercel.app",
         githubUrl: "https://github.com/developer/ecommerce",
-        featured: 1
+        featured: 1,
+        createdAt: new Date()
       },
       {
         title: "Task Management System",
@@ -94,7 +115,8 @@ export class SQLiteStorage implements IStorage {
         technologies: JSON.stringify(["Vue.js", "Express", "Socket.io", "PostgreSQL"]),
         liveUrl: "https://taskmanager-demo.vercel.app",
         githubUrl: "https://github.com/developer/taskmanager",
-        featured: 0
+        featured: 0,
+        createdAt: new Date()
       },
       {
         title: "Social Media Dashboard",
@@ -103,7 +125,8 @@ export class SQLiteStorage implements IStorage {
         technologies: JSON.stringify(["Next.js", "Prisma", "PostgreSQL", "Redis"]),
         liveUrl: "https://social-dashboard.vercel.app",
         githubUrl: "https://github.com/developer/social-dashboard",
-        featured: 1
+        featured: 1,
+        createdAt: new Date()
       }
     ]);
 
@@ -128,25 +151,29 @@ export class SQLiteStorage implements IStorage {
         title: "Senior Full Stack Developer",
         description: "Leading development teams and architecting scalable web applications for enterprise clients",
         frequency: "2021 - Present",
-        icon: "fas fa-code"
+        icon: "fas fa-code",
+        active: 1
       },
       {
         title: "Technical Lead",
         description: "Managing cross-functional teams and overseeing technical implementation of complex projects",
         frequency: "2019 - 2021",
-        icon: "fas fa-users"
+        icon: "fas fa-users",
+        active: 1
       },
       {
         title: "Open Source Contributor",
         description: "Contributing to popular open source projects and maintaining community libraries",
         frequency: "2018 - Present",
-        icon: "fab fa-github"
+        icon: "fab fa-github",
+        active: 1
       },
       {
         title: "Tech Conference Speaker",
         description: "Speaking at industry conferences about modern web development practices and emerging technologies",
         frequency: "2020 - Present",
-        icon: "fas fa-microphone"
+        icon: "fas fa-microphone",
+        active: 1
       }
     ];
 
@@ -178,6 +205,36 @@ export class SQLiteStorage implements IStorage {
     ];
 
     await db.insert(pricingPlans).values(pricingData);
+
+    // Sample social links
+    const socialLinksData = [
+      {
+        name: "GitHub",
+        icon: "fa-github",
+        url: "https://github.com/username",
+        order: 1
+      },
+      {
+        name: "LinkedIn",
+        icon: "fa-linkedin",
+        url: "https://linkedin.com/in/username",
+        order: 2
+      },
+      {
+        name: "Instagram",
+        icon: "fa-instagram",
+        url: "https://instagram.com/username",
+        order: 3
+      },
+      {
+        name: "Twitter",
+        icon: "fa-twitter",
+        url: "https://twitter.com/username",
+        order: 4
+      }
+    ];
+
+    await db.insert(socialLinks).values(socialLinksData);
 
     // Create admin user
     await db.insert(users).values({
@@ -213,13 +270,31 @@ export class SQLiteStorage implements IStorage {
   }
 
   async createProject(project: InsertProject): Promise<Project> {
-    const result = await db.insert(projects).values(project).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari project jika ada, biarkan database yang mengisi otomatis
+      const { createdAt, ...cleanProject } = project as any;
+      console.log('Creating project with clean data:', cleanProject);
+      const result = await db.insert(projects).values(cleanProject).returning();
+      console.log('Project created successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in createProject:', err);
+      throw err;
+    }
   }
 
   async updateProject(id: number, updates: Partial<InsertProject>): Promise<Project> {
-    const result = await db.update(projects).set(updates).where(eq(projects.id, id)).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari updates jika ada
+      const { createdAt, ...cleanUpdates } = updates as any;
+      console.log('Updating project with clean data:', { id, updates: cleanUpdates });
+      const result = await db.update(projects).set(cleanUpdates).where(eq(projects.id, id)).returning();
+      console.log('Project updated successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in updateProject:', err);
+      throw err;
+    }
   }
 
   async deleteProject(id: number): Promise<void> {
@@ -255,13 +330,31 @@ export class SQLiteStorage implements IStorage {
   }
 
   async createActivity(activity: InsertActivity): Promise<Activity> {
-    const result = await db.insert(activities).values(activity).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari activity jika ada, biarkan database yang mengisi otomatis
+      const { createdAt, ...cleanActivity } = activity as any;
+      console.log('Creating activity with clean data:', cleanActivity);
+      const result = await db.insert(activities).values(cleanActivity).returning();
+      console.log('Activity created successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in createActivity:', err);
+      throw err;
+    }
   }
 
   async updateActivity(id: number, updates: Partial<InsertActivity>): Promise<Activity> {
-    const result = await db.update(activities).set(updates).where(eq(activities.id, id)).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari updates jika ada
+      const { createdAt, ...cleanUpdates } = updates as any;
+      console.log('Updating activity with clean data:', { id, updates: cleanUpdates });
+      const result = await db.update(activities).set(cleanUpdates).where(eq(activities.id, id)).returning();
+      console.log('Activity updated successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in updateActivity:', err);
+      throw err;
+    }
   }
 
   async deleteActivity(id: number): Promise<void> {
@@ -274,13 +367,31 @@ export class SQLiteStorage implements IStorage {
   }
 
   async createPricingPlan(plan: InsertPricingPlan): Promise<PricingPlan> {
-    const result = await db.insert(pricingPlans).values(plan).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari plan jika ada, biarkan database yang mengisi otomatis
+      const { createdAt, ...cleanPlan } = plan as any;
+      console.log('Creating pricing plan with clean data:', cleanPlan);
+      const result = await db.insert(pricingPlans).values(cleanPlan).returning();
+      console.log('Pricing plan created successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in createPricingPlan:', err);
+      throw err;
+    }
   }
 
   async updatePricingPlan(id: number, updates: Partial<InsertPricingPlan>): Promise<PricingPlan> {
-    const result = await db.update(pricingPlans).set(updates).where(eq(pricingPlans.id, id)).returning();
-    return result[0];
+    try {
+      // Hapus field createdAt dari updates jika ada
+      const { createdAt, ...cleanUpdates } = updates as any;
+      console.log('Updating pricing plan with clean data:', { id, updates: cleanUpdates });
+      const result = await db.update(pricingPlans).set(cleanUpdates).where(eq(pricingPlans.id, id)).returning();
+      console.log('Pricing plan updated successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in updatePricingPlan:', err);
+      throw err;
+    }
   }
 
   async deletePricingPlan(id: number): Promise<void> {
@@ -293,8 +404,19 @@ export class SQLiteStorage implements IStorage {
   }
 
   async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const result = await db.insert(contactMessages).values(message).returning();
-    return result[0];
+    try {
+      console.log('Storage createContactMessage called with:', JSON.stringify(message, null, 2));
+      
+      console.log('Creating contact message with data:', JSON.stringify(message, null, 2));
+      
+      const result = await db.insert(contactMessages).values(message).returning();
+      console.log('Contact message inserted successfully:', result[0]);
+      return result[0];
+    } catch (err) {
+      console.error('Error in createContactMessage:', err);
+      console.error('Error stack:', err?.stack);
+      throw err;
+    }
   }
 
   async markMessageAsRead(id: number): Promise<void> {
@@ -314,6 +436,87 @@ export class SQLiteStorage implements IStorage {
   async updateSiteSettings(updates: Partial<InsertSiteSettings>): Promise<SiteSettings> {
     const result = await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1)).returning();
     return result[0];
+  }
+
+  // Social Links
+  async getSocialLinks(): Promise<SocialLink[]> {
+    try {
+      return await db.select().from(socialLinks).orderBy(socialLinks.order);
+    } catch (err) {
+      console.error('Error in getSocialLinks:', err);
+      return [];
+    }
+  }
+
+  async createSocialLink(link: InsertSocialLink): Promise<SocialLink> {
+    // Cek apakah sudah ada link dengan nama yang sama
+    const existing = await db.select().from(socialLinks).where(eq(socialLinks.name, link.name));
+    if (existing.length > 0) {
+      // Update jika sudah ada
+      const result = await db.update(socialLinks).set(link).where(eq(socialLinks.name, link.name)).returning();
+      return result[0];
+    } else {
+      // Insert jika belum ada
+      const result = await db.insert(socialLinks).values(link).returning();
+      return result[0];
+    }
+  }
+
+  async updateSocialLink(id: number, updates: Partial<InsertSocialLink>): Promise<SocialLink> {
+    const result = await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteSocialLink(id: number): Promise<void> {
+    await db.delete(socialLinks).where(eq(socialLinks.id, id));
+  }
+
+  // Articles
+  async getArticles(): Promise<Article[]> {
+    try {
+      return await db.select().from(articles).orderBy(articles.createdAt);
+    } catch (err) {
+      console.error('Error in getArticles:', err);
+      return [];
+    }
+  }
+
+  async getArticle(id: number): Promise<Article | undefined> {
+    const result = await db.select().from(articles).where(eq(articles.id, id));
+    return result[0];
+  }
+
+  async createArticle(article: InsertArticle): Promise<Article> {
+    const result = await db.insert(articles).values(article).returning();
+    return result[0];
+  }
+
+  async updateArticle(id: number, updates: Partial<InsertArticle>): Promise<Article> {
+    const result = await db.update(articles).set(updates).where(eq(articles.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteArticle(id: number): Promise<void> {
+    await db.delete(articles).where(eq(articles.id, id));
+  }
+
+  // Education
+  async getEducation(): Promise<Education[]> {
+    return await db.select().from(education).orderBy(education.yearEnd, 'desc');
+  }
+
+  async createEducation(data: InsertEducation): Promise<Education> {
+    const result = await db.insert(education).values(data).returning();
+    return result[0];
+  }
+
+  async updateEducation(id: number, updates: Partial<InsertEducation>): Promise<Education> {
+    const result = await db.update(education).set(updates).where(eq(education.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteEducation(id: number): Promise<void> {
+    await db.delete(education).where(eq(education.id, id));
   }
 }
 

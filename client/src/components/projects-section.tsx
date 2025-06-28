@@ -7,6 +7,7 @@ import type { Project } from "@shared/schema";
 export default function ProjectsSection() {
   const { data: projects, isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
+    queryFn: () => fetch("/api/projects").then(res => res.json()),
   });
 
   const containerVariants = {
@@ -95,7 +96,7 @@ export default function ProjectsSection() {
                   alt={project.title}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                {project.featured && (
+                {project.featured === 1 && (
                   <div className="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                     Featured
                   </div>
@@ -109,7 +110,11 @@ export default function ProjectsSection() {
                 </p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map((tech) => (
+                  {(
+                    Array.isArray(project.technologies)
+                      ? project.technologies
+                      : JSON.parse(project.technologies)
+                  ).map((tech) => (
                     <span
                       key={tech}
                       className="px-3 py-1 bg-blue-900/30 text-blue-300 text-xs rounded-full border border-blue-500/20"

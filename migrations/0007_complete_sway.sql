@@ -1,0 +1,1 @@
+ALTER TABLE `site_settings` ADD `about_photo` text;

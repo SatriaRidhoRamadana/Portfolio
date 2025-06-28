@@ -5,6 +5,7 @@ import type { Skill } from "@shared/schema";
 export default function SkillsSection() {
   const { data: skills, isLoading } = useQuery<Skill[]>({
     queryKey: ["/api/skills"],
+    queryFn: () => fetch("/api/skills").then(res => res.json()),
   });
 
   const groupedSkills = skills?.reduce((acc, skill) => {

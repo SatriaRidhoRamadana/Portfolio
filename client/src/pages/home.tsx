@@ -6,9 +6,9 @@ import SkillsSection from "@/components/skills-section";
 import ProjectsSection from "@/components/projects-section";
 import ActivitiesSection from "@/components/activities-section";
 import PricingSection from "@/components/pricing-section";
+import ArticlesSection from "@/components/articles-section";
 import ContactSection from "@/components/contact-section";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter, Youtube } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -23,6 +23,7 @@ export default function HomePage() {
         <ProjectsSection />
         <ActivitiesSection />
         <PricingSection />
+        <ArticlesSection />
         <ContactSection />
       </main>
 
@@ -40,31 +41,6 @@ export default function HomePage() {
             <p className="text-slate-400 mb-6">
               Exploring the infinite possibilities of web development
             </p>
-            <div className="flex justify-center gap-6 mb-6">
-              {[
-                { icon: Github, href: "#" },
-                { icon: Linkedin, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Youtube, href: "#" },
-              ].map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  className="text-slate-400 hover:text-pink-500 transition-colors"
-                  whileHover={{ 
-                    scale: 1.2, 
-                    rotate: 360 
-                  }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 400,
-                    rotate: { duration: 0.6 }
-                  }}
-                >
-                  <social.icon size={24} />
-                </motion.a>
-              ))}
-            </div>
             <p className="text-slate-500 text-sm">
               © 2024 Cosmic Developer. All rights reserved across all galaxies.
             </p>

@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
+  --background: hsl(230, 35%, 7%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(225, 39%, 10%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --popover: hsl(230, 35%, 7%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(225, 39%, 10%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(215, 16%, 20%);
+  --input: hsl(215, 16%, 20%);
   --primary: hsl(233, 69%, 60%);
   --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
+  --secondary: hsl(225, 39%, 10%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(225, 39%, 10%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(215, 16%, 47%);
   --radius: 0.5rem;
   
   /* Cosmic colors */
@@ -155,6 +155,13 @@
     50% { transform: translateY(-20px); }
   }
 
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+    25% { transform: translateY(-10px) scale(1.1); opacity: 0.5; }
+    50% { transform: translateY(-25px) scale(1.2); opacity: 0.7; }
+    75% { transform: translateY(-10px) scale(1.1); opacity: 0.5; }
+  }
+
   @keyframes pulse-glow {
     0% { box-shadow: 0 0 5px var(--space-pink), 0 0 10px var(--space-pink), 0 0 15px var(--space-pink); }
     100% { box-shadow: 0 0 10px var(--space-pink), 0 0 20px var(--space-pink), 0 0 30px var(--space-pink); }
@@ -172,6 +179,10 @@
 
   .animate-float {
     animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
   }
 
   .animate-pulse-glow {
