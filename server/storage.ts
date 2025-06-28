@@ -1,5 +1,6 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/sqlite3';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import { 
   users, projects, skills, activities, pricingPlans, contactMessages, siteSettings, socialLinks,
   type User, type InsertUser, type Project, type InsertProject, 
@@ -11,8 +12,18 @@ import {
 import { eq } from 'drizzle-orm';
 
 // Initialize SQLite database
-const sqlite = new Database(process.env.DATABASE_URL || './database.sqlite');
-const db = drizzle(sqlite);
+let db: any;
+
+async function initializeDatabase() {
+  const sqlite = await open({
+    filename: process.env.DATABASE_URL || './database.sqlite',
+    driver: sqlite3.Database
+  });
+  db = drizzle(sqlite);
+}
+
+// Initialize database
+initializeDatabase();
 
 export interface IStorage {
   // Users

@@ -94,6 +94,11 @@ const requireAuth = (req: express.Request, res: express.Response, next: express.
 export function registerRoutes(app: express.Application) {
   const server = createServer(app);
 
+  // Health check endpoint for Railway
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // API Routes
   app.get("/api/site-settings", async (req, res) => {
     try {
