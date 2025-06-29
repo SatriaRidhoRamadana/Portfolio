@@ -1552,8 +1552,12 @@ export default function Dashboard() {
     e.preventDefault();
     (async () => {
       for (const platform of SOCIAL_PLATFORMS) {
-        const url = socialLinks.find((l) => l.name === platform.name)?.url || "";
-        const existing = socialLinks.find((l) => l.name === platform.name);
+        const url = socialLinks.find(
+          (l) => l.name.toLowerCase() === platform.name.toLowerCase()
+        )?.url || "";
+        const existing = socialLinks.find(
+          (l) => l.name.toLowerCase() === platform.name.toLowerCase()
+        );
         const data = {
           name: platform.name,
           icon: `fa-${platform.name.toLowerCase()}`,
@@ -2227,7 +2231,9 @@ export default function Dashboard() {
                       type="url"
                       className="flex-1 bg-slate-800 border-slate-600"
                       placeholder={`Enter ${platform.name} URL`}
-                      value={socialLinks.find((l) => l.name === platform.name)?.url || ""}
+                      value={socialLinks.find(
+                        (l) => l.name.toLowerCase() === platform.name.toLowerCase()
+                      )?.url || ""}
                       onChange={(e) => handleSocialLinkChange(platform.name, e.target.value)}
                     />
                   </div>
