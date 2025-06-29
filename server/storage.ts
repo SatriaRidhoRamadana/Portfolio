@@ -257,8 +257,8 @@ export class MySQLStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(user).returning();
-    return result[0];
+    const result = await db.insert(users).values(user);
+    return { ...user, id: result.insertId };
   }
 
   // Projects
@@ -276,9 +276,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari project jika ada, biarkan database yang mengisi otomatis
       const { createdAt, ...cleanProject } = project as any;
       console.log('Creating project with clean data:', cleanProject);
-      const result = await db.insert(projects).values(cleanProject).returning();
-      console.log('Project created successfully:', result[0]);
-      return result[0];
+      const result = await db.insert(projects).values(cleanProject);
+      console.log('Project created successfully:', result);
+      return { ...cleanProject, id: result.insertId };
     } catch (err) {
       console.error('Error in createProject:', err);
       throw err;
@@ -290,9 +290,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari updates jika ada
       const { createdAt, ...cleanUpdates } = updates as any;
       console.log('Updating project with clean data:', { id, updates: cleanUpdates });
-      const result = await db.update(projects).set(cleanUpdates).where(eq(projects.id, id)).returning();
-      console.log('Project updated successfully:', result[0]);
-      return result[0];
+      const result = await db.update(projects).set(cleanUpdates).where(eq(projects.id, id));
+      console.log('Project updated successfully:', result);
+      return { ...cleanUpdates, id };
     } catch (err) {
       console.error('Error in updateProject:', err);
       throw err;
@@ -313,13 +313,13 @@ export class MySQLStorage implements IStorage {
   }
 
   async createSkill(skill: InsertSkill): Promise<Skill> {
-    const result = await db.insert(skills).values(skill).returning();
-    return result[0];
+    const result = await db.insert(skills).values(skill);
+    return { ...skill, id: result.insertId };
   }
 
   async updateSkill(id: number, updates: Partial<InsertSkill>): Promise<Skill> {
-    const result = await db.update(skills).set(updates).where(eq(skills.id, id)).returning();
-    return result[0];
+    const result = await db.update(skills).set(updates).where(eq(skills.id, id));
+    return { ...updates, id };
   }
 
   async deleteSkill(id: number): Promise<void> {
@@ -336,9 +336,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari activity jika ada, biarkan database yang mengisi otomatis
       const { createdAt, ...cleanActivity } = activity as any;
       console.log('Creating activity with clean data:', cleanActivity);
-      const result = await db.insert(activities).values(cleanActivity).returning();
-      console.log('Activity created successfully:', result[0]);
-      return result[0];
+      const result = await db.insert(activities).values(cleanActivity);
+      console.log('Activity created successfully:', result);
+      return { ...cleanActivity, id: result.insertId };
     } catch (err) {
       console.error('Error in createActivity:', err);
       throw err;
@@ -350,9 +350,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari updates jika ada
       const { createdAt, ...cleanUpdates } = updates as any;
       console.log('Updating activity with clean data:', { id, updates: cleanUpdates });
-      const result = await db.update(activities).set(cleanUpdates).where(eq(activities.id, id)).returning();
-      console.log('Activity updated successfully:', result[0]);
-      return result[0];
+      const result = await db.update(activities).set(cleanUpdates).where(eq(activities.id, id));
+      console.log('Activity updated successfully:', result);
+      return { ...cleanUpdates, id };
     } catch (err) {
       console.error('Error in updateActivity:', err);
       throw err;
@@ -373,9 +373,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari plan jika ada, biarkan database yang mengisi otomatis
       const { createdAt, ...cleanPlan } = plan as any;
       console.log('Creating pricing plan with clean data:', cleanPlan);
-      const result = await db.insert(pricingPlans).values(cleanPlan).returning();
-      console.log('Pricing plan created successfully:', result[0]);
-      return result[0];
+      const result = await db.insert(pricingPlans).values(cleanPlan);
+      console.log('Pricing plan created successfully:', result);
+      return { ...cleanPlan, id: result.insertId };
     } catch (err) {
       console.error('Error in createPricingPlan:', err);
       throw err;
@@ -387,9 +387,9 @@ export class MySQLStorage implements IStorage {
       // Hapus field createdAt dari updates jika ada
       const { createdAt, ...cleanUpdates } = updates as any;
       console.log('Updating pricing plan with clean data:', { id, updates: cleanUpdates });
-      const result = await db.update(pricingPlans).set(cleanUpdates).where(eq(pricingPlans.id, id)).returning();
-      console.log('Pricing plan updated successfully:', result[0]);
-      return result[0];
+      const result = await db.update(pricingPlans).set(cleanUpdates).where(eq(pricingPlans.id, id));
+      console.log('Pricing plan updated successfully:', result);
+      return { ...cleanUpdates, id };
     } catch (err) {
       console.error('Error in updatePricingPlan:', err);
       throw err;
@@ -411,9 +411,9 @@ export class MySQLStorage implements IStorage {
       
       console.log('Creating contact message with data:', JSON.stringify(message, null, 2));
       
-      const result = await db.insert(contactMessages).values(message).returning();
-      console.log('Contact message inserted successfully:', result[0]);
-      return result[0];
+      const result = await db.insert(contactMessages).values(message);
+      console.log('Contact message inserted successfully:', result);
+      return { ...message, id: result.insertId };
     } catch (err) {
       console.error('Error in createContactMessage:', err);
       console.error('Error stack:', err?.stack);
@@ -436,8 +436,8 @@ export class MySQLStorage implements IStorage {
   }
 
   async updateSiteSettings(updates: Partial<InsertSiteSettings>): Promise<SiteSettings> {
-    const result = await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1)).returning();
-    return result[0];
+    const result = await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1));
+    return { ...updates, id: 1 };
   }
 
   // Social Links
@@ -455,18 +455,18 @@ export class MySQLStorage implements IStorage {
     const existing = await db.select().from(socialLinks).where(eq(socialLinks.name, link.name));
     if (existing.length > 0) {
       // Update jika sudah ada
-      const result = await db.update(socialLinks).set(link).where(eq(socialLinks.name, link.name)).returning();
-      return result[0];
+      const result = await db.update(socialLinks).set(link).where(eq(socialLinks.name, link.name));
+      return { ...link, id: result.insertId };
     } else {
       // Insert jika belum ada
-      const result = await db.insert(socialLinks).values(link).returning();
-      return result[0];
+      const result = await db.insert(socialLinks).values(link);
+      return { ...link, id: result.insertId };
     }
   }
 
   async updateSocialLink(id: number, updates: Partial<InsertSocialLink>): Promise<SocialLink> {
-    const result = await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id)).returning();
-    return result[0];
+    const result = await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id));
+    return { ...updates, id };
   }
 
   async deleteSocialLink(id: number): Promise<void> {
@@ -489,13 +489,13 @@ export class MySQLStorage implements IStorage {
   }
 
   async createArticle(article: InsertArticle): Promise<Article> {
-    const result = await db.insert(articles).values(article).returning();
-    return result[0];
+    const result = await db.insert(articles).values(article);
+    return { ...article, id: result.insertId };
   }
 
   async updateArticle(id: number, updates: Partial<InsertArticle>): Promise<Article> {
-    const result = await db.update(articles).set(updates).where(eq(articles.id, id)).returning();
-    return result[0];
+    const result = await db.update(articles).set(updates).where(eq(articles.id, id));
+    return { ...updates, id };
   }
 
   async deleteArticle(id: number): Promise<void> {
@@ -508,13 +508,13 @@ export class MySQLStorage implements IStorage {
   }
 
   async createEducation(data: InsertEducation): Promise<Education> {
-    const result = await db.insert(education).values(data).returning();
-    return result[0];
+    const result = await db.insert(education).values(data);
+    return { ...data, id: result.insertId };
   }
 
   async updateEducation(id: number, updates: Partial<InsertEducation>): Promise<Education> {
-    const result = await db.update(education).set(updates).where(eq(education.id, id)).returning();
-    return result[0];
+    const result = await db.update(education).set(updates).where(eq(education.id, id));
+    return { ...updates, id };
   }
 
   async deleteEducation(id: number): Promise<void> {

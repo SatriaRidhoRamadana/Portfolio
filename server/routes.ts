@@ -149,8 +149,8 @@ export function registerRoutes(app: express.Application) {
       res.json(project);
     } catch (error) {
       console.error('API /api/admin/projects error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to create project", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to create project", details: (error as Error)?.message });
     }
   });
 
@@ -165,8 +165,8 @@ export function registerRoutes(app: express.Application) {
       res.json(project);
     } catch (error) {
       console.error('API /api/admin/projects/:id error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to update project", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to update project", details: (error as Error)?.message });
     }
   });
 
@@ -293,8 +293,8 @@ export function registerRoutes(app: express.Application) {
       res.json(plan);
     } catch (error) {
       console.error('API /api/admin/pricing error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to create pricing plan", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to create pricing plan", details: (error as Error)?.message });
     }
   });
 
@@ -309,8 +309,8 @@ export function registerRoutes(app: express.Application) {
       res.json(plan);
     } catch (error) {
       console.error('API /api/admin/pricing/:id error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to update pricing plan", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to update pricing plan", details: (error as Error)?.message });
     }
   });
 
@@ -331,8 +331,8 @@ export function registerRoutes(app: express.Application) {
       res.json(messages);
     } catch (error) {
       console.error('API /api/admin/messages error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to fetch contact messages", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to fetch contact messages", details: (error as Error)?.message });
     }
   });
 
@@ -384,17 +384,21 @@ export function registerRoutes(app: express.Application) {
       res.json(messageResult);
     } catch (error) {
       console.error('API /api/contact error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to create contact message", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to create contact message", details: (error as Error)?.message });
     }
   });
 
   // Authentication routes
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    const token = jwt.sign({ id: req.user.id, username: req.user.username }, JWT_SECRET, {
+    if (!req.user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+    const user = req.user as any;
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
       expiresIn: "24h",
     });
-    res.json({ token, user: req.user });
+    res.json({ token, user });
   });
 
   app.post("/api/logout", (req, res) => {
@@ -404,6 +408,9 @@ export function registerRoutes(app: express.Application) {
   });
 
   app.get("/api/profile", authenticateJWT, (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "User not found" });
+    }
     res.json(req.user);
   });
 
@@ -445,7 +452,8 @@ export function registerRoutes(app: express.Application) {
       res.json(links);
     } catch (error) {
       console.error('API /api/social-links error:', error);
-      res.status(500).json({ error: "Failed to fetch social links", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to fetch social links", details: (error as Error)?.message });
     }
   });
   app.post("/api/admin/social-links", authenticateJWT, async (req, res) => {
@@ -467,8 +475,8 @@ export function registerRoutes(app: express.Application) {
       res.json(link);
     } catch (error) {
       console.error('API /api/admin/social-links error:', error);
-      console.error('Error stack:', error?.stack);
-      res.status(500).json({ error: "Failed to create social link", details: error?.message });
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to create social link", details: (error as Error)?.message });
     }
   });
   app.patch("/api/admin/social-links/:id", authenticateJWT, async (req, res) => {
