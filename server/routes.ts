@@ -237,7 +237,7 @@ export function registerRoutes(app: express.Application) {
       res.json(activity);
     } catch (error) {
       console.error('API /api/admin/activities error:', error);
-      res.status(500).json({ error: "Failed to create activity", details: error?.message });
+      res.status(500).json({ error: "Failed to create activity", details: (error as Error)?.message });
     }
   });
 
@@ -249,7 +249,7 @@ export function registerRoutes(app: express.Application) {
       res.json(activity);
     } catch (error) {
       console.error('API /api/admin/activities/:id error:', error);
-      res.status(500).json({ error: "Failed to update activity", details: error?.message });
+      res.status(500).json({ error: "Failed to update activity", details: (error as Error)?.message });
     }
   });
 
