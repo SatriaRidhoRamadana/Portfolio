@@ -8,13 +8,14 @@ export default function SkillsSection() {
     queryFn: () => fetch("/api/skills").then(res => res.json()),
   });
 
-  const groupedSkills = skills?.reduce((acc, skill) => {
+  const safeSkills = Array.isArray(skills) ? skills : [];
+  const groupedSkills = safeSkills.reduce((acc, skill) => {
     if (!acc[skill.category]) {
       acc[skill.category] = [];
     }
     acc[skill.category].push(skill);
     return acc;
-  }, {} as Record<string, Skill[]>) || {};
+  }, {} as Record<string, Skill[]>);
 
   const categoryIcons = {
     Frontend: "fab fa-react",

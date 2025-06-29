@@ -123,6 +123,8 @@ export default function ContactSection() {
     Facebook: <Facebook className="text-blue-700" />,
   };
 
+  const safeSocialLinks = Array.isArray(socialLinks) ? socialLinks : [];
+
   return (
     <section id="contact" className="py-20 relative">
       <motion.div
@@ -195,8 +197,8 @@ export default function ContactSection() {
             <motion.div className="cosmic-card p-6 rounded-xl" variants={itemVariants}>
               <h3 className="orbitron text-xl font-bold mb-6">Social Channels</h3>
               <div className="flex gap-4">
-                {socialLinks && socialLinks.length > 0 ? (
-                  socialLinks.map((social, index) => {
+                {safeSocialLinks.length > 0 ? (
+                  safeSocialLinks.map((social, index) => {
                     const IconComponent = SOCIAL_ICON_MAP[social.name] || <Send />;
                     return (
                       <motion.a

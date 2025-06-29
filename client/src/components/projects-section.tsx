@@ -10,6 +10,8 @@ export default function ProjectsSection() {
     queryFn: () => fetch("/api/projects").then(res => res.json()),
   });
 
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -82,7 +84,7 @@ export default function ProjectsSection() {
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={containerVariants}
         >
-          {projects?.map((project) => (
+          {safeProjects.map((project, index) => (
             <motion.div
               key={project.id}
               className="cosmic-card rounded-xl overflow-hidden group"

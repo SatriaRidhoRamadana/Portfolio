@@ -10,6 +10,8 @@ export default function PricingSection() {
     queryFn: () => fetch("/api/pricing").then(res => res.json()),
   });
 
+  const safePricingPlans = Array.isArray(pricingPlans) ? pricingPlans : [];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -87,7 +89,7 @@ export default function PricingSection() {
           className="grid md:grid-cols-3 gap-8"
           variants={containerVariants}
         >
-          {pricingPlans?.map((plan) => (
+          {safePricingPlans.map((plan, index) => (
             <motion.div
               key={plan.id}
               className={`cosmic-card p-8 rounded-2xl relative ${

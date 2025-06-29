@@ -8,6 +8,8 @@ export default function ActivitiesSection() {
     queryFn: () => fetch("/api/activities").then(res => res.json()),
   });
 
+  const safeActivities = Array.isArray(activities) ? activities : [];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -82,7 +84,7 @@ export default function ActivitiesSection() {
           className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
           variants={containerVariants}
         >
-          {activities?.map((activity, index) => (
+          {safeActivities.map((activity, index) => (
             <motion.div
               key={activity.id}
               className="cosmic-card p-6 rounded-xl text-center group"
