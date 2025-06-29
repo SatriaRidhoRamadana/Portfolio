@@ -143,12 +143,6 @@ export default function LoginForm() {
             </Button>
           </form>
         </Form>
-        
-        <div className="mt-4 text-center text-sm text-slate-400">
-          <p>Demo credentials:</p>
-          <p>Username: <span className="text-pink-400">admin</span></p>
-          <p>Password: <span className="text-pink-400">password</span></p>
-        </div>
       </div>
     </motion.div>
   );
