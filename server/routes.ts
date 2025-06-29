@@ -94,6 +94,24 @@ const requireAuth = (req: express.Request, res: express.Response, next: express.
 export function registerRoutes(app: express.Application) {
   const server = createServer(app);
 
+  // Initialize database and test connection
+  (async () => {
+    try {
+      console.log('Testing database connection...');
+      const connection = await (storage as any).pool?.getConnection();
+      if (connection) {
+        connection.release();
+        console.log('Database connection successful');
+        
+        // Initialize data if needed
+        await (storage as any).initializeData();
+      }
+    } catch (error) {
+      console.error('Database connection failed:', error);
+      // Don't crash the app, just log the error
+    }
+  })();
+
   // Health check endpoint for Railway
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });

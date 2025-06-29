@@ -16,6 +16,19 @@ const pool = mysql.createPool({
 });
 const db = drizzle(pool);
 
+// Test database connection
+async function testDatabaseConnection() {
+  try {
+    console.log('Testing database connection...');
+    await pool.getConnection();
+    console.log('Database connection successful');
+    return true;
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    return false;
+  }
+}
+
 export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
@@ -80,169 +93,192 @@ export interface IStorage {
 
 export class MySQLStorage implements IStorage {
   constructor() {
-    this.initializeData();
+    // Don't call initializeData in constructor, call it explicitly
   }
 
   private async initializeData() {
-    // Check if data already exists
-    const existingSettings = await db.select().from(siteSettings).limit(1);
-    if (existingSettings.length > 0) return;
-
-    // Initialize with sample data
-    await db.insert(siteSettings).values({
-      heroTitle: "Professional Developer",
-      heroSubtitle: "Building modern web applications with cutting-edge technologies",
-      aboutDescription: "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences.",
-      email: "contact@developer.com",
-      phone: "+1 (555) 123-4567",
-      location: "Remote / Available Worldwide"
-    });
-
-    // Sample projects
-    await db.insert(projects).values([
-      {
-        title: "E-Commerce Platform",
-        description: "Full-stack e-commerce solution with React, Node.js, and payment integration",
-        image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400",
-        technologies: JSON.stringify(["React", "Node.js", "MongoDB", "Stripe"]),
-        liveUrl: "https://ecommerce-demo.vercel.app",
-        githubUrl: "https://github.com/developer/ecommerce",
-        featured: 1,
-        createdAt: new Date()
-      },
-      {
-        title: "Task Management System",
-        description: "Collaborative project management application with real-time synchronization",
-        image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400",
-        technologies: JSON.stringify(["Vue.js", "Express", "Socket.io", "PostgreSQL"]),
-        liveUrl: "https://taskmanager-demo.vercel.app",
-        githubUrl: "https://github.com/developer/taskmanager",
-        featured: 0,
-        createdAt: new Date()
-      },
-      {
-        title: "Social Media Dashboard",
-        description: "Modern social media management platform with analytics and scheduling",
-        image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400",
-        technologies: JSON.stringify(["Next.js", "Prisma", "PostgreSQL", "Redis"]),
-        liveUrl: "https://social-dashboard.vercel.app",
-        githubUrl: "https://github.com/developer/social-dashboard",
-        featured: 1,
-        createdAt: new Date()
+    try {
+      console.log('Initializing database with sample data...');
+      
+      // Check if data already exists
+      const existingSettings = await db.select().from(siteSettings).limit(1);
+      if (existingSettings.length > 0) {
+        console.log('Database already has data, skipping initialization');
+        return;
       }
-    ]);
 
-    // Sample skills
-    const skillsData = [
-      { name: "React.js", category: "Frontend", level: 95, icon: "fab fa-react" },
-      { name: "TypeScript", category: "Frontend", level: 90, icon: "fab fa-js" },
-      { name: "Tailwind CSS", category: "Frontend", level: 92, icon: "fas fa-palette" },
-      { name: "Node.js", category: "Backend", level: 88, icon: "fab fa-node-js" },
-      { name: "Express.js", category: "Backend", level: 85, icon: "fas fa-server" },
-      { name: "Prisma ORM", category: "Backend", level: 80, icon: "fas fa-layer-group" },
-      { name: "SQLite", category: "Database", level: 85, icon: "fas fa-database" },
-      { name: "PostgreSQL", category: "Database", level: 82, icon: "fas fa-database" },
-      { name: "MongoDB", category: "Database", level: 78, icon: "fas fa-leaf" }
-    ];
+      console.log('No existing data found, creating sample data...');
 
-    await db.insert(skills).values(skillsData);
+      // Initialize with sample data
+      await db.insert(siteSettings).values({
+        heroTitle: "Professional Developer",
+        heroSubtitle: "Building modern web applications with cutting-edge technologies",
+        aboutDescription: "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences.",
+        email: "contact@developer.com",
+        phone: "+1 (555) 123-4567",
+        location: "Remote / Available Worldwide"
+      });
 
-    // Sample activities
-    const activitiesData = [
-      {
-        title: "Senior Full Stack Developer",
-        description: "Leading development teams and architecting scalable web applications for enterprise clients",
-        frequency: "2021 - Present",
-        icon: "fas fa-code",
-        active: 1
-      },
-      {
-        title: "Technical Lead",
-        description: "Managing cross-functional teams and overseeing technical implementation of complex projects",
-        frequency: "2019 - 2021",
-        icon: "fas fa-users",
-        active: 1
-      },
-      {
-        title: "Open Source Contributor",
-        description: "Contributing to popular open source projects and maintaining community libraries",
-        frequency: "2018 - Present",
-        icon: "fab fa-github",
-        active: 1
-      },
-      {
-        title: "Tech Conference Speaker",
-        description: "Speaking at industry conferences about modern web development practices and emerging technologies",
-        frequency: "2020 - Present",
-        icon: "fas fa-microphone",
-        active: 1
-      }
-    ];
+      console.log('Site settings created');
 
-    await db.insert(activities).values(activitiesData);
+      // Sample projects
+      await db.insert(projects).values([
+        {
+          title: "E-Commerce Platform",
+          description: "Full-stack e-commerce solution with React, Node.js, and payment integration",
+          image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400",
+          technologies: JSON.stringify(["React", "Node.js", "MongoDB", "Stripe"]),
+          liveUrl: "https://ecommerce-demo.vercel.app",
+          githubUrl: "https://github.com/developer/ecommerce",
+          featured: 1,
+          createdAt: new Date()
+        },
+        {
+          title: "Task Management System",
+          description: "Collaborative project management application with real-time synchronization",
+          image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400",
+          technologies: JSON.stringify(["Vue.js", "Express", "Socket.io", "PostgreSQL"]),
+          liveUrl: "https://taskmanager-demo.vercel.app",
+          githubUrl: "https://github.com/developer/taskmanager",
+          featured: 0,
+          createdAt: new Date()
+        },
+        {
+          title: "Social Media Dashboard",
+          description: "Modern social media management platform with analytics and scheduling",
+          image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400",
+          technologies: JSON.stringify(["Next.js", "Prisma", "PostgreSQL", "Redis"]),
+          liveUrl: "https://social-dashboard.vercel.app",
+          githubUrl: "https://github.com/developer/social-dashboard",
+          featured: 1,
+          createdAt: new Date()
+        }
+      ]);
 
-    // Sample pricing plans
-    const pricingData = [
-      {
-        name: "Basic Development",
-        price: 2500,
-        duration: "per project",
-        features: JSON.stringify(["Frontend Development", "Responsive Design", "Basic SEO", "1 Month Support"]),
-        popular: 0
-      },
-      {
-        name: "Professional Package",
-        price: 5500,
-        duration: "per project",
-        features: JSON.stringify(["Full-Stack Development", "Database Integration", "API Development", "Advanced SEO", "3 Months Support"]),
-        popular: 1
-      },
-      {
-        name: "Enterprise Solution",
-        price: 12000,
-        duration: "per project",
-        features: JSON.stringify(["Enterprise Architecture", "Microservices", "DevOps & CI/CD", "Performance Optimization", "6 Months Support"]),
-        popular: 0
-      }
-    ];
+      console.log('Projects created');
 
-    await db.insert(pricingPlans).values(pricingData);
+      // Sample skills
+      const skillsData = [
+        { name: "React.js", category: "Frontend", level: 95, icon: "fab fa-react" },
+        { name: "TypeScript", category: "Frontend", level: 90, icon: "fab fa-js" },
+        { name: "Tailwind CSS", category: "Frontend", level: 92, icon: "fas fa-palette" },
+        { name: "Node.js", category: "Backend", level: 88, icon: "fab fa-node-js" },
+        { name: "Express.js", category: "Backend", level: 85, icon: "fas fa-server" },
+        { name: "Prisma ORM", category: "Backend", level: 80, icon: "fas fa-layer-group" },
+        { name: "SQLite", category: "Database", level: 85, icon: "fas fa-database" },
+        { name: "PostgreSQL", category: "Database", level: 82, icon: "fas fa-database" },
+        { name: "MongoDB", category: "Database", level: 78, icon: "fas fa-leaf" }
+      ];
 
-    // Sample social links
-    const socialLinksData = [
-      {
-        name: "GitHub",
-        icon: "fa-github",
-        url: "https://github.com/username",
-        order: 1
-      },
-      {
-        name: "LinkedIn",
-        icon: "fa-linkedin",
-        url: "https://linkedin.com/in/username",
-        order: 2
-      },
-      {
-        name: "Instagram",
-        icon: "fa-instagram",
-        url: "https://instagram.com/username",
-        order: 3
-      },
-      {
-        name: "Twitter",
-        icon: "fa-twitter",
-        url: "https://twitter.com/username",
-        order: 4
-      }
-    ];
+      await db.insert(skills).values(skillsData);
+      console.log('Skills created');
 
-    await db.insert(socialLinks).values(socialLinksData);
+      // Sample activities
+      const activitiesData = [
+        {
+          title: "Senior Full Stack Developer",
+          description: "Leading development teams and architecting scalable web applications for enterprise clients",
+          frequency: "2021 - Present",
+          icon: "fas fa-code",
+          active: 1
+        },
+        {
+          title: "Technical Lead",
+          description: "Managing cross-functional teams and overseeing technical implementation of complex projects",
+          frequency: "2019 - 2021",
+          icon: "fas fa-users",
+          active: 1
+        },
+        {
+          title: "Open Source Contributor",
+          description: "Contributing to popular open source projects and maintaining community libraries",
+          frequency: "2018 - Present",
+          icon: "fab fa-github",
+          active: 1
+        },
+        {
+          title: "Tech Conference Speaker",
+          description: "Speaking at industry conferences about modern web development practices and emerging technologies",
+          frequency: "2020 - Present",
+          icon: "fas fa-microphone",
+          active: 1
+        }
+      ];
 
-    // Create admin user
-    await db.insert(users).values({
-      username: "admin",
-      password: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy" // hashed "password"
-    });
+      await db.insert(activities).values(activitiesData);
+      console.log('Activities created');
+
+      // Sample pricing plans
+      const pricingData = [
+        {
+          name: "Basic Development",
+          price: 2500,
+          duration: "per project",
+          features: JSON.stringify(["Frontend Development", "Responsive Design", "Basic SEO", "1 Month Support"]),
+          popular: 0
+        },
+        {
+          name: "Professional Package",
+          price: 5500,
+          duration: "per project",
+          features: JSON.stringify(["Full-Stack Development", "Database Integration", "API Development", "Advanced SEO", "3 Months Support"]),
+          popular: 1
+        },
+        {
+          name: "Enterprise Solution",
+          price: 12000,
+          duration: "per project",
+          features: JSON.stringify(["Enterprise Architecture", "Microservices", "DevOps & CI/CD", "Performance Optimization", "6 Months Support"]),
+          popular: 0
+        }
+      ];
+
+      await db.insert(pricingPlans).values(pricingData);
+      console.log('Pricing plans created');
+
+      // Sample social links
+      const socialLinksData = [
+        {
+          name: "GitHub",
+          icon: "fa-github",
+          url: "https://github.com/username",
+          order: 1
+        },
+        {
+          name: "LinkedIn",
+          icon: "fa-linkedin",
+          url: "https://linkedin.com/in/username",
+          order: 2
+        },
+        {
+          name: "Instagram",
+          icon: "fa-instagram",
+          url: "https://instagram.com/username",
+          order: 3
+        },
+        {
+          name: "Twitter",
+          icon: "fa-twitter",
+          url: "https://twitter.com/username",
+          order: 4
+        }
+      ];
+
+      await db.insert(socialLinks).values(socialLinksData);
+      console.log('Social links created');
+
+      // Create admin user
+      await db.insert(users).values({
+        username: "admin",
+        password: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy" // hashed "password"
+      });
+      console.log('Admin user created');
+
+      console.log('Database initialization completed successfully');
+    } catch (error) {
+      console.error('Error initializing database:', error);
+      // Don't throw error, just log it
+    }
   }
 
   // Users
