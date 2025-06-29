@@ -3,8 +3,12 @@ import { defineConfig } from "drizzle-kit";
 export default defineConfig({
   out: "./migrations",
   schema: "./shared/schema.ts",
-  dialect: "sqlite",
+  dialect: "mysql",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "./database.sqlite",
+    host: "crossover.proxy.rlwy.net",
+    port: 24752,
+    user: "root",
+    password: "xYWLnkwAQYJyslPYzhoORxClyprTIFzp",
+    database: "railway",
   },
 });

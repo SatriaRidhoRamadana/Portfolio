@@ -1,97 +1,97 @@
-import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
+import { mysqlTable, varchar, int, text, datetime } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+export const users = mysqlTable("users", {
+  id: int("id").primaryKey().autoincrement(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
 });
 
-export const projects = sqliteTable("projects", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
+export const projects = mysqlTable("projects", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  image: text("image").notNull(),
-  technologies: text("technologies").notNull(), // Will store as JSON string
-  liveUrl: text("live_url"),
-  githubUrl: text("github_url"),
-  featured: integer("featured").default(0), // 0 = false, 1 = true
-  createdAt: integer("created_at").default(sql`(strftime('%s', 'now'))`),
+  image: varchar("image", { length: 255 }).notNull(),
+  technologies: text("technologies").notNull(),
+  liveUrl: varchar("live_url", { length: 255 }),
+  githubUrl: varchar("github_url", { length: 255 }),
+  featured: int("featured").default(0),
+  createdAt: datetime("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const skills = sqliteTable("skills", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  category: text("category").notNull(), // frontend, backend, database
-  level: integer("level").notNull(), // 1-100
-  icon: text("icon").notNull(),
+export const skills = mysqlTable("skills", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 255 }).notNull(),
+  level: int("level").notNull(),
+  icon: varchar("icon", { length: 255 }).notNull(),
 });
 
-export const activities = sqliteTable("activities", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
+export const activities = mysqlTable("activities", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  frequency: text("frequency").notNull(),
-  icon: text("icon").notNull(),
-  active: integer("active").default(1), // 1 = active, 0 = inactive
+  frequency: varchar("frequency", { length: 255 }).notNull(),
+  icon: varchar("icon", { length: 255 }).notNull(),
+  active: int("active").default(1),
 });
 
-export const pricingPlans = sqliteTable("pricing_plans", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  price: integer("price").notNull(),
-  duration: text("duration").notNull(),
-  features: text("features").notNull(), // Will store as JSON string
-  popular: integer("popular").default(0), // 0 = false, 1 = true
+export const pricingPlans = mysqlTable("pricing_plans", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  price: int("price").notNull(),
+  duration: varchar("duration", { length: 255 }).notNull(),
+  features: text("features").notNull(),
+  popular: int("popular").default(0),
 });
 
-export const contactMessages = sqliteTable("contact_messages", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  subject: text("subject").notNull(),
+export const contactMessages = mysqlTable("contact_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 255 }).notNull(),
   message: text("message").notNull(),
-  read: integer("read").default(0), // 0 = false, 1 = true
-  createdAt: integer("created_at").default(sql`(strftime('%s', 'now'))`),
+  read: int("read").default(0),
+  createdAt: datetime("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const siteSettings = sqliteTable("site_settings", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  heroTitle: text("hero_title").notNull(),
-  heroSubtitle: text("hero_subtitle").notNull(),
+export const siteSettings = mysqlTable("site_settings", {
+  id: int("id").primaryKey().autoincrement(),
+  heroTitle: varchar("hero_title", { length: 255 }).notNull(),
+  heroSubtitle: varchar("hero_subtitle", { length: 255 }).notNull(),
   aboutDescription: text("about_description").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone").notNull(),
-  location: text("location").notNull(),
-  profilePhoto: text("profile_photo"),
-  aboutPhoto: text("about_photo"),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }).notNull(),
+  profilePhoto: varchar("profile_photo", { length: 255 }),
+  aboutPhoto: varchar("about_photo", { length: 255 }),
 });
 
-export const socialLinks = sqliteTable("social_links", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  icon: text("icon").notNull(),
-  url: text("url").notNull(),
-  order: integer("order").default(0),
+export const socialLinks = mysqlTable("social_links", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  icon: varchar("icon", { length: 255 }).notNull(),
+  url: varchar("url", { length: 255 }).notNull(),
+  order: int("order").default(0),
 });
 
-export const articles = sqliteTable("articles", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
+export const articles = mysqlTable("articles", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   summary: text("summary").notNull(),
   content: text("content").notNull(),
-  image: text("image"),
-  createdAt: integer("created_at").default(sql`(strftime('%s', 'now'))`),
+  image: varchar("image", { length: 255 }),
+  createdAt: datetime("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const education = sqliteTable("education", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  degree: text("degree").notNull(),
-  school: text("school").notNull(),
-  yearStart: integer("year_start").notNull(),
-  yearEnd: integer("year_end").notNull(),
+export const education = mysqlTable("education", {
+  id: int("id").primaryKey().autoincrement(),
+  degree: varchar("degree", { length: 255 }).notNull(),
+  school: varchar("school", { length: 255 }).notNull(),
+  yearStart: int("year_start").notNull(),
+  yearEnd: int("year_end").notNull(),
   description: text("description"),
 });
 

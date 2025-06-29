@@ -1,6 +1,5 @@
-import { drizzle } from 'drizzle-orm/sqlite3';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
 import { 
   users, projects, skills, activities, pricingPlans, contactMessages, siteSettings, socialLinks,
   type User, type InsertUser, type Project, type InsertProject, 
@@ -11,19 +10,11 @@ import {
 } from "@shared/schema";
 import { eq } from 'drizzle-orm';
 
-// Initialize SQLite database
-let db: any;
-
-async function initializeDatabase() {
-  const sqlite = await open({
-    filename: process.env.DATABASE_URL || './database.sqlite',
-    driver: sqlite3.Database
-  });
-  db = drizzle(sqlite);
-}
-
-// Initialize database
-initializeDatabase();
+// Initialize MySQL database
+const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL,
+});
+const db = drizzle(pool);
 
 export interface IStorage {
   // Users
@@ -87,7 +78,7 @@ export interface IStorage {
   deleteEducation(id: number): Promise<void>;
 }
 
-export class SQLiteStorage implements IStorage {
+export class MySQLStorage implements IStorage {
   constructor() {
     this.initializeData();
   }
@@ -531,5 +522,5 @@ export class SQLiteStorage implements IStorage {
   }
 }
 
-// Export the SQLite storage instance
-export const storage = new SQLiteStorage();
+// Export the MySQL storage instance
+export const storage = new MySQLStorage();
