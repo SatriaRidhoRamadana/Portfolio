@@ -313,7 +313,12 @@ export class MySQLStorage implements IStorage {
 
   // Projects
   async getProjects(): Promise<Project[]> {
-    return await db.select().from(projects).orderBy(projects.createdAt);
+    try {
+      return await db.select().from(projects).orderBy(projects.createdAt);
+    } catch (err) {
+      console.error('Error in getProjects:', err);
+      return [];
+    }
   }
 
   async getProject(id: number): Promise<Project | undefined> {
@@ -355,11 +360,21 @@ export class MySQLStorage implements IStorage {
 
   // Skills
   async getSkills(): Promise<Skill[]> {
-    return await db.select().from(skills).orderBy(skills.name);
+    try {
+      return await db.select().from(skills).orderBy(skills.name);
+    } catch (err) {
+      console.error('Error in getSkills:', err);
+      return [];
+    }
   }
 
   async getSkillsByCategory(category: string): Promise<Skill[]> {
-    return await db.select().from(skills).where(eq(skills.category, category)).orderBy(skills.name);
+    try {
+      return await db.select().from(skills).where(eq(skills.category, category)).orderBy(skills.name);
+    } catch (err) {
+      console.error('Error in getSkillsByCategory:', err);
+      return [];
+    }
   }
 
   async createSkill(skill: InsertSkill): Promise<Skill> {
@@ -378,7 +393,12 @@ export class MySQLStorage implements IStorage {
 
   // Activities
   async getActivities(): Promise<Activity[]> {
-    return await db.select().from(activities).orderBy(activities.id);
+    try {
+      return await db.select().from(activities).orderBy(activities.id);
+    } catch (err) {
+      console.error('Error in getActivities:', err);
+      return [];
+    }
   }
 
   async createActivity(activity: InsertActivity): Promise<Activity> {
@@ -415,7 +435,12 @@ export class MySQLStorage implements IStorage {
 
   // Pricing Plans
   async getPricingPlans(): Promise<PricingPlan[]> {
-    return await db.select().from(pricingPlans).orderBy(pricingPlans.id);
+    try {
+      return await db.select().from(pricingPlans).orderBy(pricingPlans.id);
+    } catch (err) {
+      console.error('Error in getPricingPlans:', err);
+      return [];
+    }
   }
 
   async createPricingPlan(plan: InsertPricingPlan): Promise<PricingPlan> {
@@ -577,7 +602,12 @@ export class MySQLStorage implements IStorage {
 
   // Education
   async getEducation(): Promise<Education[]> {
-    return await db.select().from(education).orderBy(education.yearEnd);
+    try {
+      return await db.select().from(education).orderBy(education.yearEnd);
+    } catch (err) {
+      console.error('Error in getEducation:', err);
+      return [];
+    }
   }
 
   async createEducation(data: InsertEducation): Promise<Education> {
