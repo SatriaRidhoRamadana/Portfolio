@@ -1,0 +1,16 @@
+[Unit]
+Description=Portfolio Backend
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/portfolio
+Environment=NODE_ENV=production
+Environment=PORT=5000
+EnvironmentFile=/var/www/portfolio/.env
+ExecStart=/usr/bin/node /var/www/portfolio/dist/index.js
+Restart=always
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
