@@ -16,6 +16,8 @@ window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
     if (configuredApiBaseUrl) {
       return originalFetch(`${configuredApiBaseUrl}${url}`, init);
     }
+
+    return originalFetch(`${window.location.origin}${url}`, init);
   }
 
   return originalFetch(input, init);

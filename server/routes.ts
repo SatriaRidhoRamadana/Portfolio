@@ -404,7 +404,8 @@ export function registerRoutes(app: express.Application) {
     } catch (error) {
       console.error('API /api/contact error:', error);
       console.error('Error stack:', (error as Error)?.stack);
-      res.status(500).json({ error: "Failed to create contact message", details: (error as Error)?.message });
+      const message = error instanceof Error ? error.message : "Unknown database error";
+      res.status(500).json({ error: "Failed to create contact message", details: message });
     }
   });
 
