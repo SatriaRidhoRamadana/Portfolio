@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   email VARCHAR(255) NOT NULL,
   subject VARCHAR(255) NOT NULL,
   message TEXT NOT NULL,
-  read INT DEFAULT 0,
+  `read` INT DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
