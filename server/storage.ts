@@ -96,6 +96,20 @@ export class MySQLStorage implements IStorage {
     // Don't call initializeData in constructor, call it explicitly
   }
 
+  private createDefaultSiteSettings(): SiteSettings {
+    return {
+      id: 1,
+      heroTitle: "Professional Developer",
+      heroSubtitle: "Building modern web applications with cutting-edge technologies",
+      aboutDescription: "As a dedicated fullstack developer, I specialize in creating robust, scalable web applications using modern technologies. With expertise in both frontend and backend development, I deliver high-quality solutions that meet business requirements and provide excellent user experiences.",
+      email: "contact@developer.com",
+      phone: "+1 (555) 123-4567",
+      location: "Remote / Available Worldwide",
+      profilePhoto: null,
+      aboutPhoto: null,
+    } as SiteSettings;
+  }
+
   private async initializeData() {
     try {
       console.log('Initializing database with sample data...');
@@ -467,13 +481,36 @@ export class MySQLStorage implements IStorage {
 
   // Site Settings
   async getSiteSettings(): Promise<SiteSettings> {
-    const result = await db.select().from(siteSettings).limit(1);
-    return result[0];
+    try {
+      const result = await db.select().from(siteSettings).limit(1);
+      if (result[0]) {
+        return result[0];
+      }
+
+      const defaults = this.createDefaultSiteSettings();
+      await db.insert(siteSettings).values(defaults);
+      return defaults;
+    } catch (err) {
+      console.error('Error in getSiteSettings:', err);
+      return this.createDefaultSiteSettings();
+    }
   }
 
   async updateSiteSettings(updates: Partial<InsertSiteSettings>): Promise<SiteSettings> {
-    const result = await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1));
-    return { ...updates, id: 1 } as SiteSettings;
+    try {
+      const existing = await db.select().from(siteSettings).limit(1);
+      if (existing.length === 0) {
+        const defaults = this.createDefaultSiteSettings();
+        await db.insert(siteSettings).values({ ...defaults, ...updates, id: 1 });
+        return { ...defaults, ...updates, id: 1 } as SiteSettings;
+      }
+
+      await db.update(siteSettings).set(updates).where(eq(siteSettings.id, 1));
+      return { ...existing[0], ...updates, id: 1 } as SiteSettings;
+    } catch (err) {
+      console.error('Error in updateSiteSettings:', err);
+      return this.createDefaultSiteSettings();
+    }
   }
 
   // Social Links

@@ -123,6 +123,7 @@ export function registerRoutes(app: express.Application) {
       const settings = await storage.getSiteSettings();
       res.json(settings);
     } catch (error) {
+      console.error('Failed to fetch site settings:', error);
       res.status(500).json({ error: "Failed to fetch site settings" });
     }
   });
@@ -437,6 +438,7 @@ export function registerRoutes(app: express.Application) {
       const settings = await storage.getSiteSettings();
       res.json(settings);
     } catch (error) {
+      console.error('Failed to fetch site settings:', error);
       res.status(500).json({ error: "Failed to fetch site settings" });
     }
   });
@@ -446,6 +448,7 @@ export function registerRoutes(app: express.Application) {
       const updatedSettings = await storage.updateSiteSettings(req.body);
       res.json(updatedSettings);
     } catch (error) {
+      console.error('Failed to update site settings:', error);
       res.status(500).json({ error: "Failed to update site settings" });
     }
   });
