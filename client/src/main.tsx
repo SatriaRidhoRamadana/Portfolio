@@ -16,14 +16,6 @@ window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
     if (configuredApiBaseUrl) {
       return originalFetch(`${configuredApiBaseUrl}${url}`, init);
     }
-
-    const fallbackApiBaseUrl = window.location.origin.includes("s3-website")
-      ? "http://54.179.181.85:5001"
-      : "";
-
-    if (fallbackApiBaseUrl) {
-      return originalFetch(`${fallbackApiBaseUrl}${url}`, init);
-    }
   }
 
   return originalFetch(input, init);
