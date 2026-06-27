@@ -81,13 +81,13 @@ export default function ProjectsSection() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
           variants={containerVariants}
         >
           {safeProjects.map((project, index) => (
             <motion.div
               key={project.id}
-              className="cosmic-card rounded-xl overflow-hidden group"
+              className="cosmic-card rounded-xl overflow-hidden group flex flex-col h-full"
               variants={cardVariants}
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -105,7 +105,7 @@ export default function ProjectsSection() {
                 )}
               </div>
               
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                 <p className="text-slate-400 mb-4 text-sm leading-relaxed">
                   {project.description}

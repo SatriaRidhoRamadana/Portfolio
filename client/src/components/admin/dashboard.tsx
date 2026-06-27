@@ -1548,9 +1548,15 @@ export default function Dashboard() {
     { name: 'Facebook', icon: <Facebook className="text-blue-700" /> },
   ];
 
-  function handleSaveSocialLinks(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSaveSocialLinks(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    (async () => {
+
+    if (!token) {
+      alert("Session expired. Silakan login ulang.");
+      return;
+    }
+
+    try {
       for (const platform of SOCIAL_PLATFORMS) {
         const url = socialLinks.find(
           (l) => l.name.toLowerCase() === platform.name.toLowerCase()
@@ -1564,36 +1570,26 @@ export default function Dashboard() {
           url,
           order: SOCIAL_PLATFORMS.findIndex((p) => p.name === platform.name) + 1,
         };
+
         if (url) {
           if (existing) {
-            await fetch(`/api/admin/social-links/${existing.id}`, {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify(data),
-            });
+            await apiRequest("PATCH", `/api/admin/social-links/${existing.id}`, data, token);
           } else {
-            await fetch('/api/admin/social-links', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-              body: JSON.stringify(data),
-            });
+            await apiRequest("POST", "/api/admin/social-links", data, token);
           }
         } else if (existing) {
-          await fetch(`/api/admin/social-links/${existing.id}`, {
-            method: 'DELETE',
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          });
+          await apiRequest("DELETE", `/api/admin/social-links/${existing.id}`, undefined, token);
         }
       }
-      // Refresh
-      fetch('/api/social-links').then(r => r.json()).then(setSocialLinks);
-    })();
+
+      const refreshed = await fetch('/api/social-links');
+      const refreshedLinks = await refreshed.json();
+      setSocialLinks(refreshedLinks);
+      toast({ title: "Social links saved!" });
+    } catch (error) {
+      console.error("Social link save error:", error);
+      alert("Gagal menyimpan social links. Cek console untuk detail.");
+    }
   }
 
   // Tambahkan fungsi ini di dalam komponen Dashboard

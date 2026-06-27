@@ -28,9 +28,9 @@ export default function ArticlesSection() {
     <section id="articles" className="py-20 bg-slate-900/60 relative z-10">
       <div className="max-w-5xl mx-auto px-4">
         <h2 className="orbitron text-3xl font-bold text-pink-500 mb-8 text-center">Articles</h2>
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {isArray ? articles.map((article) => (
-            <div key={article.id} className="bg-slate-800/80 rounded-lg p-6 shadow-lg flex flex-col">
+            <div key={article.id} className="bg-slate-800/80 rounded-lg p-6 shadow-lg flex flex-col h-full">
               {article.image && (
                 <img src={article.image} alt={article.title} className="mb-4 rounded-md max-h-48 object-cover w-full" />
               )}

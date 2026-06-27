@@ -549,22 +549,21 @@ export class MySQLStorage implements IStorage {
   }
 
   async createSocialLink(link: InsertSocialLink): Promise<SocialLink> {
-    // Cek apakah sudah ada link dengan nama yang sama
     const existing = await db.select().from(socialLinks).where(eq(socialLinks.name, link.name));
     if (existing.length > 0) {
-      // Update jika sudah ada
-      const result = await db.update(socialLinks).set(link).where(eq(socialLinks.name, link.name));
-      return { ...link, id: (result as any).insertId, order: link.order || null };
+      await db.update(socialLinks).set(link).where(eq(socialLinks.name, link.name));
+      const [updated] = await db.select().from(socialLinks).where(eq(socialLinks.name, link.name));
+      return updated;
     } else {
-      // Insert jika belum ada
       const result = await db.insert(socialLinks).values(link);
-      return { ...link, id: (result as any).insertId, order: link.order || null };
+      return { ...link, id: (result as any).insertId, order: link.order || null } as SocialLink;
     }
   }
 
   async updateSocialLink(id: number, updates: Partial<InsertSocialLink>): Promise<SocialLink> {
-    const result = await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id));
-    return { ...updates, id, order: updates.order || null } as SocialLink;
+    await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id));
+    const [updated] = await db.select().from(socialLinks).where(eq(socialLinks.id, id));
+    return updated;
   }
 
   async deleteSocialLink(id: number): Promise<void> {

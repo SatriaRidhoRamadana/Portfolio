@@ -81,13 +81,13 @@ export default function ActivitiesSection() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch"
           variants={containerVariants}
         >
           {safeActivities.map((activity, index) => (
             <motion.div
               key={activity.id}
-              className="cosmic-card p-6 rounded-xl text-center group"
+              className="cosmic-card p-6 rounded-xl text-center group flex flex-col h-full"
               variants={cardVariants}
               whileHover={{ 
                 scale: 1.05,
