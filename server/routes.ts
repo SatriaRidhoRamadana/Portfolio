@@ -503,10 +503,21 @@ export function registerRoutes(app: express.Application) {
   });
   app.patch("/api/admin/social-links/:id", authenticateJWT, async (req, res) => {
     try {
-      const link = await storage.updateSocialLink(parseInt(req.params.id), req.body);
+      const id = Number.parseInt(req.params.id, 10);
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ error: "Invalid social link id" });
+      }
+
+      console.log('Updating social link', id, 'with body:', JSON.stringify(req.body, null, 2));
+      const link = await storage.updateSocialLink(id, req.body);
+      if (!link) {
+        return res.status(404).json({ error: "Social link not found" });
+      }
       res.json(link);
     } catch (error) {
-      res.status(500).json({ error: "Failed to update social link" });
+      console.error('API /api/admin/social-links PATCH error:', error);
+      console.error('Error stack:', (error as Error)?.stack);
+      res.status(500).json({ error: "Failed to update social link", details: (error as Error)?.message });
     }
   });
   app.delete("/api/admin/social-links/:id", authenticateJWT, async (req, res) => {

@@ -561,9 +561,21 @@ export class MySQLStorage implements IStorage {
   }
 
   async updateSocialLink(id: number, updates: Partial<InsertSocialLink>): Promise<SocialLink> {
-    await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id));
-    const [updated] = await db.select().from(socialLinks).where(eq(socialLinks.id, id));
-    return updated;
+    if (!updates || Object.keys(updates).length === 0) {
+      throw new Error("No updates provided for social link");
+    }
+
+    try {
+      await db.update(socialLinks).set(updates).where(eq(socialLinks.id, id));
+      const [updated] = await db.select().from(socialLinks).where(eq(socialLinks.id, id));
+      if (!updated) {
+        throw new Error(`Social link not found after update: ${id}`);
+      }
+      return updated;
+    } catch (err) {
+      console.error(`Error in updateSocialLink(${id}):`, err);
+      throw err;
+    }
   }
 
   async deleteSocialLink(id: number): Promise<void> {

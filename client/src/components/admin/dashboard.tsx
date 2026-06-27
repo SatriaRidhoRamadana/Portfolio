@@ -1571,13 +1571,15 @@ export default function Dashboard() {
           order: SOCIAL_PLATFORMS.findIndex((p) => p.name === platform.name) + 1,
         };
 
+        const existingHasId = existing && typeof existing.id === "number";
+
         if (url) {
-          if (existing) {
+          if (existingHasId) {
             await apiRequest("PATCH", `/api/admin/social-links/${existing.id}`, data, token);
           } else {
             await apiRequest("POST", "/api/admin/social-links", data, token);
           }
-        } else if (existing) {
+        } else if (existingHasId) {
           await apiRequest("DELETE", `/api/admin/social-links/${existing.id}`, undefined, token);
         }
       }
